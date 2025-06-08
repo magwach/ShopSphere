@@ -156,11 +156,68 @@ export async function getRecommendedProducts(req, res) {
   }
 }
 
+export async function getCategoryProducts(req, res) {
+  const { category } = req.params;
 
-export async function getCategoryProducts(req, res){
-    try {
-        const { category } = req.params;
-    } catch (error) {
-        
+  try {
+    const products = await Product.find({ category });
+    if (products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No products found in this category",
+      });
     }
+    return res.status(200).json({
+      success: true,
+      message: "Products fetched successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error fetching category products:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function toggleFeaturedProduct(req, res) {
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+    product.isFeatured = !product.isFeatured;
+    await product.save();
+    try {
+      const featuredProducts = await Product.find({ isFeatured: true }).lean();
+      await redis.set("featured_products", JSON.stringify(featuredProducts));
+    } catch (error) {
+      console.error("Error updating featured status in Redis:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update featured status in Redis",
+        error: error.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Product featured status updated successfully",
+      data: featuredProducts,
+    });
+  } catch (error) {
+    console.error("Error toggling featured product:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 }
