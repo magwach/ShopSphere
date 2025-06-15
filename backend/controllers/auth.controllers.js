@@ -132,3 +132,20 @@ export async function refreshToken(req, res) {
     });
   }
 }
+
+export async function getProfile(req, res) {
+  try {
+    res.status(200).json({
+      success: true,
+      message: "User profile fetched successfully",
+      data: req.user,
+    });
+  } catch (error) {
+    console.error("Error in getProfile:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
