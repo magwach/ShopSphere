@@ -30,7 +30,7 @@ export default function SignUpPage() {
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8 ">
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         className="flex flex-col justify-center py-12 sm:px-6 lg:px-8"
