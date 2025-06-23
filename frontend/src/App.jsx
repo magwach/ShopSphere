@@ -1,14 +1,26 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import HomePage from "./pages/home.page.jsx";
 import LoginPage from "./pages/login.page.jsx";
 import SignUpPage from "./pages/signup.page.jsx";
 import Navbar from "./components/navbar.component.jsx";
+import ShopSphereSpinner from "./components/loading.jsx";
+import NotFoundPage from "./pages/not.found.page.jsx";
+
+import { useUserStore } from "./stores/user.store.js";
+import { useEffect } from "react";
 
 export default function App() {
   const location = useLocation();
   const allowedPaths = ["/", "/login", "/signup"];
   const showNavbar = allowedPaths.includes(location.pathname);
+
+  const { user, checkAuthentication, isAuthenticated, authLoading } =
+    useUserStore();
+
+  useEffect(() => {
+    checkAuthentication();
+  }, [checkAuthentication, isAuthenticated]);
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -17,14 +29,20 @@ export default function App() {
         </div>
       </div>
       <div className="relative z-50 pt-20">
-        {showNavbar && <Navbar />}
-
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="*" element={<h1>404 Not Found</h1>} />
-        </Routes>
+        {showNavbar &&  <Navbar />}
+        {authLoading ? (
+          <ShopSphereSpinner />
+        ) : (
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/login"
+              element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />}
+            />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        )}
       </div>
     </div>
   );

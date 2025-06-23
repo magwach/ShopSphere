@@ -9,7 +9,6 @@ export async function protectedRoute(req, res, next) {
         .status(401)
         .json({ success: false, message: "Unauthorized - No access token" });
     }
-
     try {
       const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
       const userId = decoded.id;

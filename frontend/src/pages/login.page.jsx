@@ -10,16 +10,18 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { useUserStore } from "../stores/user.store.js";
 
 export default function LoginPage() {
-  const loading = false;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const { login, loading } = useUserStore();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
+    login(email, password, setEmail, setPassword);
   };
 
   return (
@@ -31,7 +33,7 @@ export default function LoginPage() {
         transition={{ duration: 0.8 }}
       >
         <h2 className="mt-6 text-center text-3xl font-extrabold text-emerald-400">
-          Create your account
+          Login to your account
         </h2>
       </motion.div>
 

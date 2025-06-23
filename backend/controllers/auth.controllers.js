@@ -92,6 +92,14 @@ export async function signup(req, res) {
     });
   } catch (error) {
     console.error("Error in signup:", error);
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        error: messages,
+      });
+    }
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -135,9 +143,11 @@ export async function refreshToken(req, res) {
 
 export async function getProfile(req, res) {
   try {
+    if (!req.user) {
+      return res.status(200).json({ success: false });
+    }
     res.status(200).json({
       success: true,
-      message: "User profile fetched successfully",
       data: req.user,
     });
   } catch (error) {

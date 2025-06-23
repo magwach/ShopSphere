@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   UserPlus,
@@ -11,11 +11,13 @@ import {
   EyeOff,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useUserStore } from "../stores/user.store.js";
 
 export default function SignUpPage() {
-  const loading = true;
+  const { signup, loading } = useUserStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,9 +26,26 @@ export default function SignUpPage() {
     confirmPassword: "",
   });
 
+  const validatePassword = () => {
+    if (
+      formData.confirmPassword.length !== 0 &&
+      formData.password !== formData.confirmPassword
+    ) {
+      setPasswordError(true);
+      return;
+    }
+    return setPasswordError(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    signup(formData, setFormData);
   };
+
+  useEffect(() => {
+    validatePassword();
+  }, [formData.password, formData.confirmPassword]);
+
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8 ">
       <motion.div
@@ -130,12 +149,16 @@ export default function SignUpPage() {
                   type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className="block w-full px-3 py-2 pl-10 pr-10 bg-gray-700 border border-gray-600 
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                  }}
+                  className={`block w-full px-3 py-2 pl-10 pr-10 bg-gray-700 border ${
+                    passwordError
+                      ? "border-red-500"
+                      : "border-gray-600 focus:ring-emerald-500 focus:border-emerald-500"
+                  } 
                        rounded-md shadow-sm placeholder-gray-400 focus:outline-none 
-                       focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                        sm:text-sm`}
                   placeholder="••••••••"
                 />
               </div>
@@ -170,15 +193,19 @@ export default function SignUpPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   required
                   value={formData.confirmPassword}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       confirmPassword: e.target.value,
-                    })
-                  }
-                  className="block w-full px-3 py-2 pl-10 pr-10 bg-gray-700 border border-gray-600 
+                    });
+                  }}
+                  className={`block w-full px-3 py-2 pl-10 pr-10 bg-gray-700 border ${
+                    passwordError
+                      ? "border-red-500"
+                      : "border-gray-600 focus:ring-emerald-500 focus:border-emerald-500"
+                  } 
                        rounded-md shadow-sm placeholder-gray-400 focus:outline-none 
-                       focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                       sm:text-sm`}
                   placeholder="••••••••"
                 />
               </div>
