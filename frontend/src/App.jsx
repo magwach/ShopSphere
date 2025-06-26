@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import HomePage from "./pages/home.page.jsx";
 import LoginPage from "./pages/login.page.jsx";
 import SignUpPage from "./pages/signup.page.jsx";
@@ -15,12 +15,19 @@ export default function App() {
   const allowedPaths = ["/", "/login", "/signup"];
   const showNavbar = allowedPaths.includes(location.pathname);
 
-  const { user, checkAuthentication, isAuthenticated, authLoading } =
-    useUserStore();
+  const navigate = useNavigate();
+
+  const { checkAuthentication, isAuthenticated, authLoading } = useUserStore();
 
   useEffect(() => {
     checkAuthentication();
+    if (!isAuthenticated && !authLoading) {
+      navigate("/login");
+      return;
+    }
   }, [checkAuthentication, isAuthenticated]);
+
+
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -29,7 +36,7 @@ export default function App() {
         </div>
       </div>
       <div className="relative z-50 pt-20">
-        {showNavbar &&  <Navbar />}
+        {showNavbar && <Navbar />}
         {authLoading ? (
           <ShopSphereSpinner />
         ) : (
