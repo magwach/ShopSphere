@@ -80,6 +80,46 @@ export const useUserStore = create((set, get) => ({
       );
     }
   },
+  adminlogin: async (email, password, setEmail, setPassword) => {
+    set({ loading: true });
+    try {
+      const response = await axios.post("/auth/login", { email, password });
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Login failed");
+      }
+      if (
+        !response?.data?.data?.role ||
+        response?.data?.data?.role !== "admin"
+      ) {
+        set({
+          loading: false,
+        });
+        return toast.error("Nice try but you are not an admin");
+      }
+      set({
+        user: response?.data?.data,
+        loading: false,
+        isAuthenticated: response?.data?.data?.success,
+      });
+      toast(
+        `${getTimeOfDayGreeting()} Admin ${
+          response?.data?.data?.name?.split(" ")[1] ||
+          response?.data?.data?.name?.split(" ")[0]
+        }!`,
+        { icon: "👏" }
+      );
+
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      set({ loading: false });
+      toast.error(
+        error?.response?.data?.error?.[0] ||
+          error?.response?.data?.message ||
+          "Login failed"
+      );
+    }
+  },
   logout: async () => {
     try {
       const response = await axios.post("/auth/logout");
