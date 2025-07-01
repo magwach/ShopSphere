@@ -5,8 +5,7 @@ import { useLocation } from "react-router-dom";
 
 export default function Navbar() {
   const location = useLocation();
-  const disallowedPaths = ["/admin-login", "/admin"];
-  const showNavbar = !disallowedPaths.includes(location.pathname);
+  const adminBar = location.pathname === "/admin";
 
   const { user, logout, isAuthenticated } = useUserStore();
   const isAdmin = user && user.role === "admin";
@@ -16,7 +15,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-3">
         <div
           className={
-            isAuthenticated && showNavbar
+            isAuthenticated || adminBar
               ? "flex flex-wrap justify-between items-center"
               : "flex justify-center items-center"
           }
@@ -30,7 +29,7 @@ export default function Navbar() {
             </span>
             Sphere
           </Link>
-          {isAuthenticated && showNavbar && (
+          {isAuthenticated && (
             <nav className="flex flex-wrap items-center gap-4">
               <Link
                 to={"/"}
@@ -39,15 +38,17 @@ export default function Navbar() {
                 Home
               </Link>
 
-              <Link
-                className="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1 rounded-md font-medium
+              {!adminBar && (
+                <Link
+                  className="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1 rounded-md font-medium
                                transition duration-300 ease-in-out flex items-center"
-                to={"/admin"}
-              >
-                {!isAdmin && <Lock className="inline-block mr-1" size={18} />}
-                <span className="hidden sm:inline">Dashboard</span>
-              </Link>
-              {user && (
+                  to={"/admin"}
+                >
+                  {!isAdmin && <Lock className="inline-block mr-1" size={18} />}
+                  <span className="hidden sm:inline">Dashboard</span>
+                </Link>
+              )}
+              {user && !adminBar && (
                 <Link
                   to={"/cart"}
                   className="relative group text-gray-300 hover:text-emerald-400 transition duration-300 ease-in-out"

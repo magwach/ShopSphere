@@ -1,16 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import {
-  LogIn,
-  Mail,
-  Lock,
-  ArrowRight,
-  Loader,
-  Eye,
-  EyeOff,
-  Home,
-} from "lucide-react";
+import { Mail, Lock, Loader, Eye, EyeOff, Home } from "lucide-react";
+import { RiAdminFill } from "react-icons/ri";
 import { useUserStore } from "../stores/user.store.js";
 
 export default function AdminLoginPage() {
@@ -129,7 +121,7 @@ export default function AdminLoginPage() {
                 </>
               ) : (
                 <>
-                  <LogIn className="mr-2 h-5 w-5" aria-hidden="true" />
+                  <RiAdminFill className="mr-2 h-5 w-5" aria-hidden="true" />
                   Login
                 </>
               )}
@@ -145,8 +137,6 @@ export default function AdminLoginPage() {
               Home
             </Link>
           </form>
-
-         
         </div>
       </motion.div>
     </div>

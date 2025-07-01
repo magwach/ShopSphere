@@ -18,6 +18,7 @@ export async function login(req, res) {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
+
     if (user && (await user.comparePassword(password))) {
       const { accessToken, refreshToken } = generateToken(user._id);
       await storeToken(user._id, refreshToken);

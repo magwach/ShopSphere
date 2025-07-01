@@ -10,6 +10,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { RiAdminFill } from "react-icons/ri";
 import { useUserStore } from "../stores/user.store.js";
 
 export default function LoginPage() {

@@ -52,6 +52,7 @@ export const useUserStore = create((set, get) => ({
   },
   login: async (email, password, setEmail, setPassword) => {
     set({ loading: true });
+
     try {
       const response = await axios.post("/auth/login", { email, password });
       if (!response.data.success) {
@@ -80,10 +81,14 @@ export const useUserStore = create((set, get) => ({
       );
     }
   },
+
   adminlogin: async (email, password, setEmail, setPassword) => {
     set({ loading: true });
     try {
-      const response = await axios.post("/auth/login", { email, password });
+      const response = await axios.post("/auth/login", {
+        email,
+        password,
+      });
       if (!response.data.success) {
         throw new Error(response.data.message || "Login failed");
       }
@@ -130,6 +135,8 @@ export const useUserStore = create((set, get) => ({
       toast.success("Sucessfully logged out");
     } catch (error) {
       set({ isAuthenticated: true });
+      console.log(error);
+
       toast.error(
         error?.response?.data?.error?.[0] ||
           error?.response?.data?.message ||

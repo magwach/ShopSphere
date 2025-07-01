@@ -6,7 +6,7 @@ import SignUpPage from "./pages/signup.page.jsx";
 import Navbar from "./components/navbar.component.jsx";
 import ShopSphereSpinner from "./components/loading.jsx";
 import NotFoundPage from "./pages/not.found.page.jsx";
-import AdminPage from "./pages/admin.page.jsx";
+import AdminDashboard from "./pages/admin.page.jsx";
 import AdminLoginPage from "./pages/admin.login.page.jsx";
 
 import { useUserStore } from "./stores/user.store.js";
@@ -19,8 +19,12 @@ export default function App() {
 
   const navigate = useNavigate();
 
-  const { checkAuthentication, isAuthenticated, authLoading, user } =
-    useUserStore();
+  const {
+    checkAuthentication,
+    isAuthenticated,
+    authLoading,
+    user,
+  } = useUserStore();
   useEffect(() => {
     checkAuthentication();
     if (!isAuthenticated && !authLoading) {
@@ -62,7 +66,7 @@ export default function App() {
               path="/admin"
               element={
                 user?.role === "admin" ? (
-                  <AdminPage />
+                  <AdminDashboard />
                 ) : (
                   <Navigate to="/admin-login" />
                 )
