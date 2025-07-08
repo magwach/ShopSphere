@@ -110,17 +110,36 @@ export async function deleteProduct(req, res) {
       }
     }
     await Product.findByIdAndDelete(id);
+
+    if (product.isFeatured) {
+      try {
+        const featuredProducts = await Product.find({
+          isFeatured: true,
+        }).lean();
+        await redis.set("featured_products", JSON.stringify(featuredProducts));
+        console.log("redis Hiitt");
+      } catch (error) {
+        console.error("Error updating featured status in Redis:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to update featured status in Redis",
+          error: error.message,
+        });
+      }
+    }
     return res.status(200).json({
       success: true,
       message: "Product deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting product:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
   }
 }
 
@@ -210,7 +229,6 @@ export async function toggleFeaturedProduct(req, res) {
     return res.status(200).json({
       success: true,
       message: "Product featured status updated successfully",
-      data: featuredProducts,
     });
   } catch (error) {
     console.error("Error toggling featured product:", error);

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import AnalyticsTab from "../components/analytics.jsx";
 import CreateProductForm from "../components/create.product.jsx";
 import ProductsList from "../components/product.list.jsx";
+import { useProductStore } from "../stores/product.store.js";
 
 const tabs = [
   { id: "create", label: "Create Product", icon: PlusCircle },
@@ -14,6 +15,12 @@ const tabs = [
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("create");
+
+  const { fetchProducts } = useProductStore();
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+  
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-16">

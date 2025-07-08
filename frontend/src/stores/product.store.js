@@ -18,7 +18,10 @@ export const useProductStore = create((set, get) => ({
       if (!response.data.success) {
         throw new Error(response.data.message || "Product creation failed");
       }
-      set({ loading: false });
+      set((prevState) => ({
+        products: [...prevState.products, response.data.data],
+        loading: false,
+      }));
       toast.success("Product created successfully");
       setProductData({
         name: "",
@@ -28,7 +31,6 @@ export const useProductStore = create((set, get) => ({
         image: "",
       });
     } catch (error) {
-      console.log(error);
       set({ loading: false });
       toast.error(
         error?.response?.data?.error?.[0] ||
@@ -37,4 +39,65 @@ export const useProductStore = create((set, get) => ({
       );
     }
   },
+  fetchProducts: async () => {
+    set({ loading: true });
+    try {
+      const response = await axios.get("/products");
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to fetch products");
+      }
+      set({ products: response.data.data, loading: false });
+    } catch (error) {
+      set({ loading: false });
+      toast.error(
+        error?.response?.data?.error?.[0] ||
+          error?.response?.data?.message ||
+          "Failed to fetch products"
+      );
+    }
+  },
+  deleteProduct: async (id) => {
+    set({ loading: true });
+    try {
+      const response = await axios.delete(`/products/${id}`);
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Product deletion failed");
+      }
+      set((prevState) => ({
+        products: prevState.products.filter((product) => product._id !== id),
+        loading: false,
+      }));
+      toast.success("Product deleted successfully");
+    } catch (error) {
+      set({ loading: false });
+      toast.error(
+        error?.response?.data?.error?.[0] ||
+          error?.response?.data?.message ||
+          "Product deletion failed"
+      );
+    }
+  },
+  toggleFeaturedProduct: async (id) => {
+    set({ loading: true });
+    try {
+    const response = await axios.patch(`/products/${id}/toggle-featured`);
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to toggle featured status");
+      }
+      set((prevState) => ({
+        products: prevState.products.map((product) =>
+          product._id === id ? { ...product, isFeatured: !product.isFeatured } : product
+        ),
+        loading: false,
+      }));
+
+    } catch (error) {
+      set({ loading: false });
+      toast.error(
+        error?.response?.data?.error?.[0] ||
+          error?.response?.data?.message ||
+          "Failed to toggle featured status"
+      );
+    }
+  }
 }));

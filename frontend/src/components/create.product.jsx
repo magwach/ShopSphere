@@ -22,6 +22,7 @@ export default function CreateProductForm() {
     category: "",
     image: "",
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const { createProduct, loading } = useProductStore();
 
@@ -31,15 +32,20 @@ export default function CreateProductForm() {
   };
 
   const handleImageChange = (e) => {
+    setUploadingImage(true);
+
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
 
       reader.onloadend = () => {
         setNewProduct({ ...newProduct, image: reader.result });
+        setUploadingImage(false);
       };
 
       reader.readAsDataURL(file);
+    } else {
+      setUploadingImage(false);
     }
   };
   return (
@@ -161,8 +167,21 @@ export default function CreateProductForm() {
             htmlFor="image"
             className="cursor-pointer bg-gray-700 py-2 px-3 border border-gray-600 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
           >
-            <Upload className="h-5 w-5 inline-block mr-2" />
-            Upload Image
+            {" "}
+            {uploadingImage ? (
+              <>
+                <Loader
+                  className="mr-2 h-5 w-5 animate-spin inline-block"
+                  aria-hidden="true"
+                />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Upload className="h-5 w-5 inline-block mr-2" />
+                Upload Image
+              </>
+            )}
           </label>
           {newProduct.image && (
             <span className="ml-3 text-sm text-gray-400">Image uploaded </span>

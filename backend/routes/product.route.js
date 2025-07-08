@@ -16,7 +16,12 @@ productRouter.get("/", protectedRoute, adminRoute, getAllProducts);
 productRouter.get("/featured", getAllFeturedProducts);
 productRouter.get("/recommended", getRecommendedProducts);
 productRouter.get("/category/:category", getCategoryProducts);
-productRouter.patch("/:id", protectedRoute, adminRoute, toggleFeaturedProduct);
+productRouter.patch(
+  "/:id/toggle-featured",
+  protectedRoute,
+  adminRoute,
+  toggleFeaturedProduct
+);
 productRouter.post("/", protectedRoute, adminRoute, createProduct);
 productRouter.delete("/:id", protectedRoute, adminRoute, deleteProduct);
 
