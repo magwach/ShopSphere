@@ -11,20 +11,19 @@ import AdminLoginPage from "./pages/admin.login.page.jsx";
 
 import { useUserStore } from "./stores/user.store.js";
 import { useEffect } from "react";
+import CategoryPage from "./pages/category.page.jsx";
 
 export default function App() {
   const location = useLocation();
   const allowedPaths = ["/", "/login", "/signup", "/admin-login", "/admin"];
-  const showNavbar = allowedPaths.includes(location.pathname);
+  const showNavbar =
+    allowedPaths.includes(location.pathname) ||
+    location.pathname.startsWith("/category/");
 
   const navigate = useNavigate();
 
-  const {
-    checkAuthentication,
-    isAuthenticated,
-    authLoading,
-    user,
-  } = useUserStore();
+  const { checkAuthentication, isAuthenticated, authLoading, user } =
+    useUserStore();
   useEffect(() => {
     checkAuthentication();
     if (!isAuthenticated && !authLoading) {
@@ -62,6 +61,7 @@ export default function App() {
               }
             />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/category/:category" element={<CategoryPage />} />
             <Route
               path="/admin"
               element={

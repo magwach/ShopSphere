@@ -1,11 +1,10 @@
 import { BarChart, PlusCircle, ShoppingBasket } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 import AnalyticsTab from "../components/analytics.jsx";
 import CreateProductForm from "../components/create.product.jsx";
 import ProductsList from "../components/product.list.jsx";
-import { useProductStore } from "../stores/product.store.js";
 
 const tabs = [
   { id: "create", label: "Create Product", icon: PlusCircle },
@@ -16,11 +15,6 @@ const tabs = [
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("create");
 
-  const { fetchProducts } = useProductStore();
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-  
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-16">
@@ -38,7 +32,7 @@ export default function AdminDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors duration-200 ${
+              className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors duration-200 cursor-pointer ${
                 activeTab === tab.id
                   ? "bg-emerald-600 text-white"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"

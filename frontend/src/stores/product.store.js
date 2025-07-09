@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 export const useProductStore = create((set, get) => ({
   products: [],
   loading: false,
+  fetchingProducts: false,
   setProducts: (products) => set({ products }),
   createProduct: async (productData, setProductData) => {
     set({ loading: true });
@@ -40,15 +41,15 @@ export const useProductStore = create((set, get) => ({
     }
   },
   fetchProducts: async () => {
-    set({ loading: true });
+    set({ fetchingProducts: true });
     try {
       const response = await axios.get("/products");
       if (!response.data.success) {
         throw new Error(response.data.message || "Failed to fetch products");
       }
-      set({ products: response.data.data, loading: false });
+      set({ products: response.data.data, fetchingProducts: false });
     } catch (error) {
-      set({ loading: false });
+      set({ fetchingProducts: false });
       toast.error(
         error?.response?.data?.error?.[0] ||
           error?.response?.data?.message ||
@@ -80,17 +81,20 @@ export const useProductStore = create((set, get) => ({
   toggleFeaturedProduct: async (id) => {
     set({ loading: true });
     try {
-    const response = await axios.patch(`/products/${id}/toggle-featured`);
+      const response = await axios.patch(`/products/${id}/toggle-featured`);
       if (!response.data.success) {
-        throw new Error(response.data.message || "Failed to toggle featured status");
+        throw new Error(
+          response.data.message || "Failed to toggle featured status"
+        );
       }
       set((prevState) => ({
         products: prevState.products.map((product) =>
-          product._id === id ? { ...product, isFeatured: !product.isFeatured } : product
+          product._id === id
+            ? { ...product, isFeatured: !product.isFeatured }
+            : product
         ),
         loading: false,
       }));
-
     } catch (error) {
       set({ loading: false });
       toast.error(
@@ -99,5 +103,20 @@ export const useProductStore = create((set, get) => ({
           "Failed to toggle featured status"
       );
     }
-  }
+  },
+  fetchByCategory: async (category) => {
+    set({ fetchingProducts: true });
+    try {
+      const response = await axios.get(`/products/category/${category}`);
+      set({ products: response.data.data, fetchingProducts: false });
+    } catch (error) {
+      set({ fetchingProducts: false });
+      console.log(error);
+      toast.error(
+        error?.response?.data?.error?.[0] ||
+          error?.response?.data?.message ||
+          "Failed to fetch products by category"
+      );
+    }
+  },
 }));
