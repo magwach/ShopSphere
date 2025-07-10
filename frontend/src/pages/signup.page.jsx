@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   UserPlus,
@@ -9,8 +9,9 @@ import {
   Loader,
   Eye,
   EyeOff,
+  Check,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "../stores/user.store.js";
 
 export default function SignUpPage() {
@@ -18,12 +19,24 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
+  const passwordRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+  });
+
+  // Password strength validation
+  const [passwordStrength, setPasswordStrength] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    symbol: false,
+    number: false,
   });
 
   const validatePassword = () => {
@@ -37,14 +50,63 @@ export default function SignUpPage() {
     return setPasswordError(false);
   };
 
+  const checkPasswordStrength = (password) => {
+    const strength = {
+      length: password.length >= 6,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      symbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      number: /\d/.test(password),
+    };
+    setPasswordStrength(strength);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    signup(formData, setFormData);
+    if (Object.values(passwordStrength).every(Boolean)) {
+      signup(formData, setFormData);
+    } else {
+      setPasswordError(true);
+      passwordRef.current?.focus();
+      return;
+    }
   };
 
   useEffect(() => {
     validatePassword();
   }, [formData.password, formData.confirmPassword]);
+
+  useEffect(() => {
+    checkPasswordStrength(formData.password);
+  }, [formData.password]);
+
+  const strengthRequirements = [
+    {
+      key: "length",
+      label: "At least 6 characters",
+      met: passwordStrength.length,
+    },
+    {
+      key: "uppercase",
+      label: "One uppercase letter",
+      met: passwordStrength.uppercase,
+    },
+    {
+      key: "lowercase",
+      label: "One lowercase letter",
+      met: passwordStrength.lowercase,
+    },
+    {
+      key: "symbol",
+      label: "One special symbol",
+      met: passwordStrength.symbol,
+    },
+    {
+      key: "number",
+      label: "One number",
+      met: passwordStrength.number,
+    },
+  ];
 
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8 ">
@@ -145,10 +207,13 @@ export default function SignUpPage() {
                 </button>
 
                 <input
+                  ref={passwordRef}
                   id="password"
                   type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
                   onChange={(e) => {
                     setFormData({ ...formData, password: e.target.value });
                   }}
@@ -160,8 +225,55 @@ export default function SignUpPage() {
                        rounded-md shadow-sm placeholder-gray-400 focus:outline-none 
                         sm:text-sm`}
                   placeholder="••••••••"
+                  autoCom
                 />
               </div>
+
+              <AnimatePresence>
+                {isPasswordFocused && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-3 p-3 bg-gray-700 rounded-md border border-gray-600"
+                  >
+                    <p className="text-sm text-gray-300 mb-2 font-medium">
+                      Password requirements:
+                    </p>
+                    <div className="space-y-2">
+                      {strengthRequirements.map((req, index) => (
+                        <motion.div
+                          key={req.key}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.2, delay: index * 0.1 }}
+                          className="flex items-center space-x-2"
+                        >
+                          <div
+                            className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-all duration-200 ${
+                              req.met
+                                ? "bg-emerald-500 border-emerald-500"
+                                : "border-gray-500 bg-gray-600"
+                            }`}
+                          >
+                            {req.met && (
+                              <Check className="w-3 h-3 text-white" />
+                            )}
+                          </div>
+                          <span
+                            className={`text-sm transition-colors duration-200 ${
+                              req.met ? "text-emerald-400" : "text-gray-400"
+                            }`}
+                          >
+                            {req.label}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div>
