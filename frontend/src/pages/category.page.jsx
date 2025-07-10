@@ -39,7 +39,7 @@ export default function CategoryPage() {
             ))
           ) : (
             <h2 className="text-3xl font-semibold text-gray-300 text-center col-span-full">
-              No products found
+              No product found
             </h2>
           )}
         </motion.div>
