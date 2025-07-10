@@ -30,7 +30,6 @@ export default function SignUpPage() {
     confirmPassword: "",
   });
 
-  // Password strength validation
   const [passwordStrength, setPasswordStrength] = useState({
     length: false,
     uppercase: false,
