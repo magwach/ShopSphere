@@ -2,6 +2,7 @@ import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/user.store";
 import { useLocation } from "react-router-dom";
+import ShopSphereLogo from "./logo.jsx";
 
 export default function Navbar() {
   const location = useLocation();
@@ -24,11 +25,17 @@ export default function Navbar() {
             to="/"
             className="text-2xl font-bold text-emerald-400 items-center space-x-2 flex group hover:text-white transition duration-300 ease-in-out"
           >
-            <span className="text-white group-hover:text-emerald-400 transition duration-300 ease-in-out">
-              Shop
-            </span>
-            Sphere
+            <div className="flex items-center space-x-2">
+              <ShopSphereLogo size={48} animate={true} />
+              <div className="hidden md:inline">
+                <span className="text-white group-hover:text-emerald-400 transition duration-300 ease-in-out">
+                  Shop
+                </span>
+                Sphere
+              </div>
+            </div>
           </Link>
+
           {isAuthenticated && (
             <nav className="flex flex-wrap items-center gap-4">
               <Link
@@ -62,7 +69,7 @@ export default function Navbar() {
                     className="absolute -top-2 -left-2 bg-emerald-500 text-white rounded-full px-2 py-0.5 
 									text-xs group-hover:bg-emerald-400 transition duration-300 ease-in-out"
                   >
-                    3
+                    {user?.cartItems?.length || 0}
                   </span>
                 </Link>
               )}
