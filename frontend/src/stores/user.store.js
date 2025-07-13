@@ -98,13 +98,14 @@ export const useUserStore = create((set, get) => ({
       ) {
         set({
           loading: false,
+          isAuthenticated: false,
         });
         return toast.error("Nice try but you are not an admin");
       }
       set({
         user: response?.data?.data,
         loading: false,
-        isAuthenticated: response?.data?.data?.success,
+        isAuthenticated: true,
       });
       toast(
         `${getTimeOfDayGreeting()} Admin ${
@@ -117,7 +118,7 @@ export const useUserStore = create((set, get) => ({
       setEmail("");
       setPassword("");
     } catch (error) {
-      set({ loading: false });
+      set({ loading: false, isAuthenticated: false });
       toast.error(
         error?.response?.data?.error?.[0] ||
           error?.response?.data?.message ||

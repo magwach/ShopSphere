@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import HomePage from "./pages/home.page.jsx";
 import LoginPage from "./pages/login.page.jsx";
 import SignUpPage from "./pages/signup.page.jsx";
@@ -10,8 +10,8 @@ import AdminDashboard from "./pages/admin.page.jsx";
 import AdminLoginPage from "./pages/admin.login.page.jsx";
 
 import { useUserStore } from "./stores/user.store.js";
-import { useEffect } from "react";
 import CategoryPage from "./pages/category.page.jsx";
+import { useEffect } from "react";
 
 export default function App() {
   const location = useLocation();
@@ -20,17 +20,12 @@ export default function App() {
     allowedPaths.includes(location.pathname) ||
     location.pathname.startsWith("/category/");
 
-  const navigate = useNavigate();
-
-  const { checkAuthentication, isAuthenticated, authLoading, user } =
+  const { isAuthenticated, authLoading, user, checkAuthentication } =
     useUserStore();
+
   useEffect(() => {
     checkAuthentication();
-    if (!isAuthenticated && !authLoading) {
-      navigate("/login");
-      return;
-    }
-  }, [checkAuthentication, isAuthenticated]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">

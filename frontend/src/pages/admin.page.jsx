@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import AnalyticsTab from "../components/analytics.jsx";
 import CreateProductForm from "../components/create.product.jsx";
 import ProductsList from "../components/product.list.jsx";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useUserStore } from "../stores/user.store.js";
 
 const tabs = [
   { id: "create", label: "Create Product", icon: PlusCircle },
@@ -14,7 +17,14 @@ const tabs = [
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("create");
-
+  const { isAuthenticated, authLoading } = useUserStore();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isAuthenticated && !authLoading) {
+      navigate("/admin-login");
+      return;
+    }
+  }, [isAuthenticated]);
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-16">
