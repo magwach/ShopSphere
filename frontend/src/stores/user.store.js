@@ -61,7 +61,7 @@ export const useUserStore = create((set, get) => ({
       set({
         user: response?.data?.data,
         loading: false,
-        isAuthenticated: response?.data?.data?.success,
+        isAuthenticated: true,
       });
       toast(
         `${getTimeOfDayGreeting()} ${

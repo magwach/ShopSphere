@@ -22,6 +22,7 @@ export default function App() {
 
   const { isAuthenticated, authLoading, user, checkAuthentication } =
     useUserStore();
+    console.log(isAuthenticated)
 
   useEffect(() => {
     checkAuthentication();
