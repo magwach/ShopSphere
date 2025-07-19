@@ -12,11 +12,15 @@ export const useCartStore = create((set, get) => ({
   getCartItems: async () => {
     try {
       const res = await axios.get("/cart");
-      set({ cart: res.data });
-      get.calculateTotal();
+      set({ cart: res.data.data });
+      get().calculateTotal();
     } catch (error) {
       set({ cart: [] });
-      toast.error(error.response.data.message || "An error occurred");
+      toast.error(
+        error?.response?.data?.message ||
+          "An error occurred while fetching cart items",
+        { id: "fetch-cart-items" }
+      );
     }
   },
   addToCart: async (product) => {
@@ -48,6 +52,44 @@ export const useCartStore = create((set, get) => ({
       });
       set({ loading: false });
     } catch (error) {
+      set({ loading: false });
+      toast.error(error?.response?.data?.message || "An error occurred");
+    }
+  },
+  removeFromCart: async (productId) => {
+    set({ loading: true });
+    try {
+      await axios.delete(`/cart`, { data: { productId } });
+      console.log(get().cart);
+      set((prevState) => ({
+        cart: prevState.cart.filter((item) => item.product._id !== productId),
+        loading: false,
+      }));
+      get().calculateTotal();
+      toast.success("Product removed from cart successfully", {
+        id: "remove-from-cart",
+      });
+    } catch (error) {
+      console.log(error);
+      set({ loading: false });
+      toast.error(
+        error?.response?.data?.message || "An error occurred at cart removal"
+      );
+    }
+  },
+  updateQuantity: async (productId, quantity) => {
+    set({ loading: true });
+    try {
+      await axios.put(`/cart/${productId}`, { quantity });
+      set((prevState) => ({
+        cart: prevState.cart.map((item) =>
+          item._id === productId ? { ...item, quantity } : item
+        ),
+        loading: false,
+      }));
+      get().calculateTotal();
+    } catch (error) {
+      console.error(error);
       set({ loading: false });
       toast.error(error?.response?.data?.message || "An error occurred");
     }

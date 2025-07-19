@@ -13,7 +13,7 @@ export async function protectedRoute(req, res, next) {
       const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
       const userId = decoded.id;
 
-      const user = await User.findById(userId);
+      const user = await User.findById(userId).select("-password");
       if (!user) {
         return res
           .status(404)

@@ -11,6 +11,8 @@ export const useUserStore = create((set, get) => ({
   authLoading: false,
   isAuthenticated: false,
 
+  setNumberOfCartItems: (count) => set({ numberOfCartItems: count }),
+
   signup: async ({ name, email, password, confirmPassword }, setFormData) => {
     set({ loading: true });
     if (password !== confirmPassword) {
@@ -136,7 +138,6 @@ export const useUserStore = create((set, get) => ({
       toast.success("Sucessfully logged out");
     } catch (error) {
       set({ isAuthenticated: true });
-      console.log(error);
 
       toast.error(
         error?.response?.data?.error?.[0] ||
@@ -157,7 +158,7 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       set({ authLoading: false, isAuthenticated: false });
       if (error?.response?.status === 401) {
-        toast.error("Session expired, please login again", {
+        toast.error("Session expired, please login", {
           id: "session-expired",
         });
         return;

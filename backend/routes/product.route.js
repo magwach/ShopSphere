@@ -14,7 +14,7 @@ const productRouter = express.Router();
 
 productRouter.get("/", protectedRoute, adminRoute, getAllProducts);
 productRouter.get("/featured", getAllFeturedProducts);
-productRouter.get("/recommended", getRecommendedProducts);
+productRouter.get("/recommended",protectedRoute, getRecommendedProducts);
 productRouter.get("/category/:category", getCategoryProducts);
 productRouter.patch(
   "/:id/toggle-featured",

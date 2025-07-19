@@ -1,6 +1,7 @@
 import redis from "../db/redis.js";
 import Product from "../models/product.model.js";
 import cloudinary from "../db/cloudinary.js";
+import { request } from "express";
 
 export async function getAllProducts(req, res) {
   try {
@@ -133,19 +134,23 @@ export async function deleteProduct(req, res) {
     });
   } catch (error) {
     console.error("Error deleting product:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal server error",
-        error: error.message,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 }
 
 export async function getRecommendedProducts(req, res) {
   try {
+    const cartItems = req.user.cartItems.map((item) => item.product);
     const products = await Product.aggregate([
+      {
+        $match: {
+          _id: { $nin: cartItems },
+        },
+      },
       {
         $sample: { size: 3 },
       },

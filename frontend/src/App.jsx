@@ -12,22 +12,32 @@ import AdminLoginPage from "./pages/admin.login.page.jsx";
 import { useUserStore } from "./stores/user.store.js";
 import CategoryPage from "./pages/category.page.jsx";
 import { useEffect } from "react";
+import CartPage from "./pages/cart.page.jsx";
 
 export default function App() {
   const location = useLocation();
-  const allowedPaths = ["/", "/login", "/signup", "/admin-login", "/admin"];
+  const allowedPaths = [
+    "/",
+    "/login",
+    "/signup",
+    "/admin-login",
+    "/admin",
+    "/cart",
+  ];
   const showNavbar =
     allowedPaths.includes(location.pathname) ||
     location.pathname.startsWith("/category/");
 
-  const { isAuthenticated, authLoading, user, checkAuthentication } =
-    useUserStore();
-    console.log(isAuthenticated)
+  const {
+    isAuthenticated,
+    authLoading,
+    user,
+    checkAuthentication,
+  } = useUserStore();
 
   useEffect(() => {
     checkAuthentication();
   }, []);
-
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -66,6 +76,12 @@ export default function App() {
                 ) : (
                   <Navigate to="/admin-login" />
                 )
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                isAuthenticated ? <CartPage /> : <Navigate to="/login" />
               }
             />
             <Route path="*" element={<NotFoundPage />} />

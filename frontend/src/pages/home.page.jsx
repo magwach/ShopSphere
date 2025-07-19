@@ -1,6 +1,7 @@
 import CategoryItem from "../components/category.item.jsx";
 
 export default function HomePage() {
+
   const categories = [
     { href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpeg" },
     { href: "/t-shirts", name: "T-shirts", imageUrl: "/tshirts.jpeg" },
