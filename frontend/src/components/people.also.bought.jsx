@@ -9,7 +9,7 @@ export default function PeopleAlsoBought() {
   const {
     recommendations,
     fetchRecommendations,
-    loading: isLoading,
+    recommendationsLoading: isLoading,
   } = useCartStore();
 
   useEffect(() => {

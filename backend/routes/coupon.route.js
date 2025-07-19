@@ -8,6 +8,6 @@ import {
 const couponRouter = express.Router();
 
 couponRouter.get("/", protectedRoute, getCoupons);
-couponRouter.get("/validate", protectedRoute, validateCoupon);
+couponRouter.post("/validate", protectedRoute, validateCoupon);
 
 export default couponRouter;
