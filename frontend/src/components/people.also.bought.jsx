@@ -3,26 +3,16 @@ import axios from "../lib/axios";
 import toast from "react-hot-toast";
 import { Loader } from "lucide-react";
 import ProductCard from "./product.card.jsx";
+import { useCartStore } from "../stores/cart.store.js";
 
 export default function PeopleAlsoBought() {
-  const [recommendations, setRecommendations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    recommendations,
+    fetchRecommendations,
+    loading: isLoading,
+  } = useCartStore();
 
   useEffect(() => {
-    const fetchRecommendations = async () => {
-      try {
-        const res = await axios.get("/products/recommended");
-        setRecommendations(res?.data?.data);
-      } catch (error) {
-        toast.error(
-          error.response.data.message ||
-            "An error occurred while fetching recommendations"
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchRecommendations();
   }, []);
 

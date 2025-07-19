@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 export const useCartStore = create((set, get) => ({
   loading: false,
   cart: [],
+  recommendations: [],
   coupon: null,
   total: 0,
   subtotal: 0,
@@ -47,6 +48,8 @@ export const useCartStore = create((set, get) => ({
         return { cart: updatedCart };
       });
       get().calculateTotal();
+      get().fetchRecommendations();
+
       toast.success("Product added to cart successfully", {
         id: "add-to-cart",
       });
@@ -66,6 +69,7 @@ export const useCartStore = create((set, get) => ({
         loading: false,
       }));
       get().calculateTotal();
+      get().fetchRecommendations();
       toast.success("Product removed from cart successfully", {
         id: "remove-from-cart",
       });
@@ -92,6 +96,20 @@ export const useCartStore = create((set, get) => ({
       console.error(error);
       set({ loading: false });
       toast.error(error?.response?.data?.message || "An error occurred");
+    }
+  },
+  fetchRecommendations: async () => {
+    set({ loading: true });
+    try {
+      const res = await axios.get("/products/recommended");
+      set({ recommendations: res?.data?.data });
+    } catch (error) {
+      toast.error(
+        error.response.data.message ||
+          "An error occurred while fetching recommendations"
+      );
+    } finally {
+      set({ loading: false });
     }
   },
   calculateTotal: () => {
