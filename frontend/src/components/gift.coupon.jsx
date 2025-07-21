@@ -106,7 +106,7 @@ const GiftCouponCard = () => {
         </div>
       )}
 
-      {coupon && (
+      {coupon?.length > 0 && (
         <div className="mt-4">
           <h3 className="text-lg font-medium text-gray-300">
             Your Available Coupons:
