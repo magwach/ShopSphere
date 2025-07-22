@@ -24,7 +24,6 @@ export async function getAllCartItems(req, res) {
 }
 
 export async function addToCart(req, res) {
-  console.log(req.body);
   const { productId } = req.body;
 
   try {
@@ -70,13 +69,10 @@ export async function deleteFromCart(req, res) {
         message: "User not authenticated",
       });
     }
-    console.log("user", user);
-    console.log("Items before deletion:", user.cartItems);
     user.cartItems = user.cartItems.filter(
       (item) => item.product.toString() !== productId
     );
     await user.save();
-    console.log("Items after deletion:", user.cartItems);
     return res.status(200).json({
       success: true,
       message: "Product removed from cart successfully",

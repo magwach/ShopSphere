@@ -19,7 +19,6 @@ const GiftCouponCard = () => {
   const uniqueByCode = Array.from(
     new Map(filteredCoupon.map((c) => [c.code, c])).values()
   );
-  console.log(appliedCoupon?.code);
 
   const handleApplyCoupon = () => {
     if (!userInputCode) return;

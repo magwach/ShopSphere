@@ -224,7 +224,7 @@ export default function SignUpPage() {
                        rounded-md shadow-sm placeholder-gray-400 focus:outline-none 
                         sm:text-sm`}
                   placeholder="••••••••"
-                  autoCom
+                  autoComplete="off"
                 />
               </div>
 

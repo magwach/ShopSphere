@@ -118,7 +118,6 @@ export async function deleteProduct(req, res) {
           isFeatured: true,
         }).lean();
         await redis.set("featured_products", JSON.stringify(featuredProducts));
-        console.log("redis Hiitt");
       } catch (error) {
         console.error("Error updating featured status in Redis:", error);
         return res.status(500).json({

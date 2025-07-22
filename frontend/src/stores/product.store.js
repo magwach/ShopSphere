@@ -111,7 +111,6 @@ export const useProductStore = create((set, get) => ({
       set({ products: response.data.data, fetchingProducts: false });
     } catch (error) {
       set({ fetchingProducts: false });
-      console.log(error);
       toast.error(
         error?.response?.data?.error?.[0] ||
           error?.response?.data?.message ||

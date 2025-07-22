@@ -1,15 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { Home, ArrowLeft } from "lucide-react";
+import { Home } from "lucide-react";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
     navigate("/");
-  };
-
-  const handleGoBack = () => {
-    window.history.back();
   };
 
   return (
@@ -47,14 +43,6 @@ const NotFoundPage = () => {
           >
             <Home className="w-5 h-5" />
             Go to Homepage
-          </button>
-
-          <button
-            onClick={handleGoBack}
-            className="flex items-center gap-2 bg-transparent border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Go Back
           </button>
         </div>
 

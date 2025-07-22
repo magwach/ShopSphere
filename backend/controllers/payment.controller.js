@@ -17,7 +17,8 @@ export async function createCheckOutSession(req, res) {
 
     let totalAmount = 0;
 
-    const lineItems = products.map((product) => {
+    const lineItems = products.map((item) => {
+      const product = item.product;
       const amount = Math.round(product.price * 100);
 
       totalAmount += amount * product.quantity;
@@ -31,6 +32,7 @@ export async function createCheckOutSession(req, res) {
           },
           unit_amount: amount,
         },
+        quantity: item.quantity,
       };
     });
 
@@ -47,6 +49,7 @@ export async function createCheckOutSession(req, res) {
       );
     }
 
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
@@ -62,7 +65,7 @@ export async function createCheckOutSession(req, res) {
         : [],
       metadata: {
         userId: req.user._id.toString(),
-        couponId: coupon ? coupon._id : null,
+        couponId: coupon ? coupon._id.toString() : null,
         products: JSON.stringify(
           products.map((p) => {
             return {
