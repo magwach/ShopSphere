@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useProductStore } from "../stores/product.store.js";
 import { useEffect } from "react";
 

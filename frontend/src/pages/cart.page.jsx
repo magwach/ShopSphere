@@ -8,6 +8,7 @@ import EmptyCartUI from "../components/empty.cart.jsx";
 import { useEffect } from "react";
 import { useUserStore } from "../stores/user.store.js";
 import { useNavigate } from "react-router-dom";
+import ShopSphereSpinner from "../components/loading.jsx";
 
 export default function CartPage() {
   const { cart, getCartItems } = useCartStore();
@@ -16,13 +17,14 @@ export default function CartPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated && !authLoading) {
-      navigate("/login");
-      return;
-    } else {
-      getCartItems();
-    }
+    getCartItems();
   }, []);
+  if (authLoading || isAuthenticated === null) return <ShopSphereSpinner />;
+  if (!isAuthenticated) {
+    navigate("/login");
+    return;
+  }
+
   return (
     <div className="py-8 md:py-16">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">

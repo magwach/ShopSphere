@@ -130,7 +130,6 @@ export const useCartStore = create((set, get) => ({
       get().calculateTotal();
       toast.success("Coupon applied successfully");
     } catch (error) {
-      console.log("error", error);
       toast.error(error.response?.data?.message || "Failed to apply coupon");
     }
   },

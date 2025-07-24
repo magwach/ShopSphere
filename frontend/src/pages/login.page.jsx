@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {
   LogIn,
   Mail,
@@ -10,20 +10,25 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { RiAdminFill } from "react-icons/ri";
 import { useUserStore } from "../stores/user.store.js";
+import ShopSphereSpinner from "../components/loading.jsx";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login, loading } = useUserStore();
+  const { login, loading, isAuthenticated, authLoading } = useUserStore();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     login(email, password, setEmail, setPassword);
   };
+
+  if (authLoading || isAuthenticated === null) return <ShopSphereSpinner />;
+  if (isAuthenticated) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">

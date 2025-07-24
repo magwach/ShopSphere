@@ -8,6 +8,8 @@ import ShopSphereSpinner from "./components/loading.jsx";
 import NotFoundPage from "./pages/not.found.page.jsx";
 import AdminDashboard from "./pages/admin.page.jsx";
 import AdminLoginPage from "./pages/admin.login.page.jsx";
+import PurchaseSuccessPage from "./pages/purchase.success.page.jsx";
+import PurchaseCancelPage from "./pages/purchase.cancel.page.jsx";
 
 import { useUserStore } from "./stores/user.store.js";
 import CategoryPage from "./pages/category.page.jsx";
@@ -23,17 +25,14 @@ export default function App() {
     "/admin-login",
     "/admin",
     "/cart",
+    "/success",
+    "/purchase-cancelled",
   ];
   const showNavbar =
     allowedPaths.includes(location.pathname) ||
     location.pathname.startsWith("/category/");
 
-  const {
-    isAuthenticated,
-    authLoading,
-    user,
-    checkAuthentication,
-  } = useUserStore();
+  const { user, checkAuthentication } = useUserStore();
 
   useEffect(() => {
     checkAuthentication();
@@ -47,47 +46,39 @@ export default function App() {
       </div>
       <div className="relative z-50 pt-20">
         {showNavbar && <Navbar />}
-        {authLoading ? (
-          <ShopSphereSpinner />
-        ) : (
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route
-              path="/login"
-              element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />}
-            />
-            <Route
-              path="/admin-login"
-              element={
-                user?.role === "admin" ? (
-                  <Navigate to="/admin" />
-                ) : (
-                  <AdminLoginPage />
-                )
-              }
-            />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/category/:category" element={<CategoryPage />} />
-            <Route
-              path="/admin"
-              element={
-                user?.role === "admin" ? (
-                  <AdminDashboard />
-                ) : (
-                  <Navigate to="/admin-login" />
-                )
-              }
-            />
-            <Route
-              path="/cart"
-              element={
-                isAuthenticated ? <CartPage /> : <Navigate to="/login" />
-              }
-            />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        )}
+
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/admin-login"
+            element={
+              user?.role === "admin" ? (
+                <Navigate to="/admin" />
+              ) : (
+                <AdminLoginPage />
+              )
+            }
+          />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/category/:category" element={<CategoryPage />} />
+          <Route
+            path="/admin"
+            element={
+              user?.role === "admin" ? (
+                <AdminDashboard />
+              ) : (
+                <Navigate to="/admin-login" />
+              )
+            }
+          />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/success" element={<PurchaseSuccessPage />} />
+          <Route path="/purchase-cancelled" element={<PurchaseCancelPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </div>
     </div>
   );
 }
+// http://localhost:5173/success?session_id=cs_test_b1emRrI6aSGr41RvqOA9OJFbiFLcOGfuX1MMCSVE9tOEW3YmW8gbOBK9WX
