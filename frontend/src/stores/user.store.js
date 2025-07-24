@@ -9,7 +9,7 @@ export const useUserStore = create((set, get) => ({
   user: null,
   loading: false,
   authLoading: false,
-  isAuthenticated: false,
+  isAuthenticated: null,
 
   setNumberOfCartItems: (count) => set({ numberOfCartItems: count }),
 

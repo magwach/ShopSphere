@@ -2,6 +2,8 @@ import { create } from "zustand";
 import axios from "../lib/axios.js";
 import { toast } from "react-hot-toast";
 
+import { loadStripe } from "@stripe/stripe-js";
+
 export const useCartStore = create((set, get) => ({
   loading: false,
   recommendationsLoading: false,
@@ -12,6 +14,11 @@ export const useCartStore = create((set, get) => ({
   total: 0,
   subtotal: 0,
   isappliedCoupon: false,
+  stripePromise: loadStripe(
+    "pk_test_51RXsdaQR9pa6O03n53VROw3KfYgblWGCAoelH3t1JUHeMvDUUEAx59zwY85gAyeNpzT0JeMvky3N4SdGRXIYUKWM00bcqMHqjd"
+  ),
+  processingPayment: false,
+  paymentError: false,
   getCartItems: async () => {
     try {
       const res = await axios.get("/cart");
@@ -98,6 +105,21 @@ export const useCartStore = create((set, get) => ({
       toast.error(error?.response?.data?.message || "An error occurred");
     }
   },
+  clearCart: async () => {
+    set({ loading: true });
+    try {
+      await axios.delete("/cart/all");
+      set({ cart: [] });
+      get().calculateTotal();
+      toast.success("Cart cleared successfully", { id: "clear-cart" });
+    } catch (error) {
+      set({ loading: false });
+      toast.error(
+        error?.response?.data?.message ||
+          "An error occurred while clearing cart"
+      );
+    }
+  },
   fetchRecommendations: async () => {
     set({ recommendationsLoading: true });
     try {
@@ -143,6 +165,49 @@ export const useCartStore = create((set, get) => ({
     }));
     get().calculateTotal();
     toast.success("Coupon removed");
+  },
+  handlePayment: async (retry = false) => {
+    try {
+      const stripe = await get().stripePromise;
+      const res = await axios.post("/payments/create-checkout-session", {
+        products: get().cart,
+        couponCode: get().appliedCoupon ? get().appliedCoupon.code : null,
+        retry,
+      });
+
+      if (!res.data.success) {
+        toast.error(res.data.message);
+        return;
+      }
+
+      const session = res.data;
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.data.sessionId,
+      });
+
+      if (result.error) {
+        console.error("Error:", result.error);
+      }
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  },
+  handlePaymentSuccess: async () => {
+    try {
+      set({ isProcessing: true });
+      await axios.post("/payments/checkout-success", {
+        sessionId,
+      });
+      get().clearCart();
+    } catch (error) {
+      console.log(error);
+      set({
+        paymentError: true,
+      });
+    } finally {
+      set({ isProcessing: false });
+    }
   },
   calculateTotal: () => {
     const { cart, appliedCoupon } = get();

@@ -4,7 +4,6 @@ import HomePage from "./pages/home.page.jsx";
 import LoginPage from "./pages/login.page.jsx";
 import SignUpPage from "./pages/signup.page.jsx";
 import Navbar from "./components/navbar.component.jsx";
-import ShopSphereSpinner from "./components/loading.jsx";
 import NotFoundPage from "./pages/not.found.page.jsx";
 import AdminDashboard from "./pages/admin.page.jsx";
 import AdminLoginPage from "./pages/admin.login.page.jsx";
@@ -81,4 +80,3 @@ export default function App() {
     </div>
   );
 }
-// http://localhost:5173/success?session_id=cs_test_b1emRrI6aSGr41RvqOA9OJFbiFLcOGfuX1MMCSVE9tOEW3YmW8gbOBK9WX

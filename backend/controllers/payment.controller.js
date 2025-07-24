@@ -1,3 +1,4 @@
+import redis from "../db/redis.js";
 import stripe from "../lib/stripe.js";
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
@@ -6,7 +7,23 @@ import createStripeCoupon from "../utils/create.stripe.coupon.js";
 
 export async function createCheckOutSession(req, res) {
   try {
-    const { products, couponCode } = req.body;
+    let { products, couponCode, retry } = req.body;
+
+    if (retry) {
+      products = JSON.parse(
+        await redis.get(`checkout_session_products_${req.user._id}`)
+      );
+      couponCode = JSON.parse(
+        await redis.get(`checkout_session_coupon_${req.user._id}`)
+      );
+
+      if (products === null && couponCode === null) {
+        return res.status(200).json({
+          success: false,
+          message: "No previous checkout session found",
+        });
+      }
+    }
 
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
@@ -81,6 +98,15 @@ export async function createCheckOutSession(req, res) {
       await createDBCoupon(req.user._id);
     }
 
+    await redis.set(
+      `checkout_session_products_${req.user._id}`,
+      JSON.stringify(products, couponCode)
+    );
+    await redis.set(
+      `checkout_session_coupon_${req.user._id}`,
+      JSON.stringify(couponCode)
+    );
+
     return res.status(200).json({
       success: true,
       message: "Checkout session created successfully",
@@ -132,6 +158,9 @@ export async function checkoutSuccess(req, res) {
       totalAmount: session.amount_total / 100,
       stripeSessionId: session.id,
     });
+
+    await redis.del(`checkout_session_products_${session.metadata.userId}`);
+    await redis.del(`checkout_session_coupon_${session.metadata.userId}`);
 
     return res.status(200).json({
       success: true,

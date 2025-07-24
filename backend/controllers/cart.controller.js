@@ -1,3 +1,5 @@
+import redis from "../db/redis.js";
+
 export async function getAllCartItems(req, res) {
   try {
     const user = req.user;
@@ -43,6 +45,8 @@ export async function addToCart(req, res) {
       user.cartItems.push({ product: productId });
     }
     await user.save();
+    await redis.del(`checkout_session_products_${user._id}`);
+    await redis.del(`checkout_session_coupon_${user._id}`);
     return res.status(200).json({
       success: true,
       message: "Product added to cart successfully",
@@ -72,6 +76,8 @@ export async function deleteFromCart(req, res) {
     user.cartItems = user.cartItems.filter(
       (item) => item.product.toString() !== productId
     );
+    await redis.del(`checkout_session_products_${user._id}`);
+    await redis.del(`checkout_session_coupon_${user._id}`);
     await user.save();
     return res.status(200).json({
       success: true,
@@ -112,6 +118,8 @@ export async function updateQuantity(req, res) {
         (item) => item.product.toString() !== id
       );
       await user.save();
+      await redis.del(`checkout_session_products_${user._id}`);
+      await redis.del(`checkout_session_coupon_${user._id}`);
       return res.status(200).json({
         success: true,
         message: "Cart item removed successfully",
@@ -120,6 +128,8 @@ export async function updateQuantity(req, res) {
     }
     cartItem.quantity = quantity;
     await user.save();
+    await redis.del(`checkout_session_products_${user._id}`);
+    await redis.del(`checkout_session_coupon_${user._id}`);
     return res.status(200).json({
       success: true,
       message: "Cart item quantity updated successfully",
@@ -127,6 +137,34 @@ export async function updateQuantity(req, res) {
     });
   } catch (error) {
     console.error("Error updating cart item quantity:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function clearCart(req, res) {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+    user.cartItems = [];
+    await user.save();
+    await redis.del(`checkout_session_products_${user._id}`);
+    await redis.del(`checkout_session_coupon_${user._id}`);
+    return res.status(200).json({
+      success: true,
+      message: "Cart cleared successfully",
+      data: user.cartItems,
+    });
+  } catch (error) {
+    console.error("Error clearing cart:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

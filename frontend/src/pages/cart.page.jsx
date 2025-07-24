@@ -12,7 +12,7 @@ import ShopSphereSpinner from "../components/loading.jsx";
 
 export default function CartPage() {
   const { cart, getCartItems } = useCartStore();
-  const { isAuthenticated, authLoading, user } = useUserStore();
+  const { isAuthenticated, authLoading } = useUserStore();
 
   const navigate = useNavigate();
 
