@@ -1,7 +1,12 @@
 import { useUserStore } from "../stores/user.store.js";
 import ShopSphereSpinner from "../components/loading.jsx";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, CheckCircle, HandHeart } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle,
+  HandHeart,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Confetti from "react-confetti";
@@ -17,7 +22,7 @@ export default function PurchaseSuccessPage() {
 
   const { clearCart, processingPayment, paymentError, handlePaymentSuccess } =
     useCartStore();
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const sessionId = new URLSearchParams(window.location.search).get(
@@ -26,19 +31,40 @@ export default function PurchaseSuccessPage() {
     if (sessionId) {
       handlePaymentSuccess(sessionId);
     } else {
-      setError("Session ID not found. Please try again later.");
+      setError(true);
     }
   }, [clearCart]);
 
-  if (processingPayment) return <PaymentLoader />;
-
-  if (paymentError || error) return <PaymentError />;
-
   if (authLoading || isAuthenticated === null) return <ShopSphereSpinner />;
+
   if (!isAuthenticated) {
     navigate("/login");
     return;
   }
+
+  if (processingPayment) return <PaymentLoader />;
+
+  if (error)
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-center px-4">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <AlertTriangle className="w-6 h-6 text-red-500" />
+          <h2 className="text-red-400 text-lg font-semibold">Error</h2>
+        </div>
+        <p className="text-gray-400 text-sm mb-6 max-w-sm">
+          Session ID not found. Please try again later.
+        </p>
+
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Continue Shopping
+        </Link>
+      </div>
+    );
+
+  if (paymentError) return <PaymentError />;
 
   return (
     <div className="h-screen flex items-center justify-center px-4">
