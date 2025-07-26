@@ -3,6 +3,7 @@ import axios from "../lib/axios.js";
 import { toast } from "react-hot-toast";
 
 import { loadStripe } from "@stripe/stripe-js";
+import { number } from "framer-motion";
 
 export const useCartStore = create((set, get) => ({
   loading: false,
@@ -18,7 +19,6 @@ export const useCartStore = create((set, get) => ({
   processingPayment: false,
   paymentError: false,
   orderNumber: null,
-
   setOderNumber: () => {
     set({ orderNumber: null });
   },

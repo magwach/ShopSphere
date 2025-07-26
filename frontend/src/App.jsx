@@ -33,12 +33,11 @@ export default function App() {
     location.pathname.startsWith("/category/");
 
   const { user, checkAuthentication } = useUserStore();
-  const { orderNumber } = useCartStore();
-
-  console.log(orderNumber);
+  const { getCartItems } = useCartStore();
 
   useEffect(() => {
     checkAuthentication();
+    getCartItems();
   }, []);
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">

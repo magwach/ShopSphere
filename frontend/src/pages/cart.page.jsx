@@ -11,14 +11,11 @@ import { useNavigate } from "react-router-dom";
 import ShopSphereSpinner from "../components/loading.jsx";
 
 export default function CartPage() {
-  const { cart, getCartItems } = useCartStore();
+  const { cart } = useCartStore();
   const { isAuthenticated, authLoading } = useUserStore();
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getCartItems();
-  }, []);
   if (authLoading || isAuthenticated === null) return <ShopSphereSpinner />;
   if (!isAuthenticated) {
     navigate("/login");

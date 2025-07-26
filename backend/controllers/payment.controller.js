@@ -155,7 +155,7 @@ export async function checkoutSuccess(req, res) {
       if (session.metadata.couponId) {
         const coupon = await Coupon.findOneAndUpdate(
           {
-            code: session.metadata.couponId,
+            _id: session.metadata.couponId,
             userId: session.metadata.userId,
           },
           { isActive: false },
