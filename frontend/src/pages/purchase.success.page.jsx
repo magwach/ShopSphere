@@ -20,8 +20,13 @@ export default function PurchaseSuccessPage() {
 
   const navigate = useNavigate();
 
-  const { clearCart, processingPayment, paymentError, handlePaymentSuccess } =
-    useCartStore();
+  const {
+    processingPayment,
+    paymentError,
+    handlePaymentSuccess,
+    orderNumber,
+    setOderNumber,
+  } = useCartStore();
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -33,7 +38,8 @@ export default function PurchaseSuccessPage() {
     } else {
       setError(true);
     }
-  }, [clearCart]);
+    return () => setOderNumber();
+  }, []);
 
   if (authLoading || isAuthenticated === null) return <ShopSphereSpinner />;
 
@@ -96,7 +102,7 @@ export default function PurchaseSuccessPage() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-400">Order number</span>
               <span className="text-sm font-semibold text-emerald-400">
-                #12345
+                #{orderNumber}
               </span>
             </div>
             <div className="flex items-center justify-between">

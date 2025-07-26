@@ -14,6 +14,7 @@ import { useUserStore } from "./stores/user.store.js";
 import CategoryPage from "./pages/category.page.jsx";
 import { useEffect } from "react";
 import CartPage from "./pages/cart.page.jsx";
+import { useCartStore } from "./stores/cart.store.js";
 
 export default function App() {
   const location = useLocation();
@@ -32,6 +33,9 @@ export default function App() {
     location.pathname.startsWith("/category/");
 
   const { user, checkAuthentication } = useUserStore();
+  const { orderNumber } = useCartStore();
+
+  console.log(orderNumber);
 
   useEffect(() => {
     checkAuthentication();

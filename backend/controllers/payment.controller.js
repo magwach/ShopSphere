@@ -5,6 +5,8 @@ import Order from "../models/order.model.js";
 import createDBCoupon from "../utils/create.db.coupon.js";
 import createStripeCoupon from "../utils/create.stripe.coupon.js";
 
+import { customAlphabet } from "nanoid";
+
 export async function createCheckOutSession(req, res) {
   try {
     let { products, couponCode, retry } = req.body;
@@ -85,9 +87,10 @@ export async function createCheckOutSession(req, res) {
         products: JSON.stringify(
           products.map((p) => {
             return {
-              id: p._id,
+              id: p.product._id,
               quantity: p.quantity,
-              name: p.name,
+              name: p.product.name,
+              price: p.product.price,
             };
           })
         ),
@@ -123,9 +126,15 @@ export async function createCheckOutSession(req, res) {
 }
 
 export async function checkoutSuccess(req, res) {
-  const { session_id } = req.body;
+  const { sessionId } = req.body;
+
+  const generateOrderNumber = customAlphabet(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    6
+  );
   try {
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
     if (!session) {
       return res.status(404).json({
         success: false,
@@ -133,9 +142,18 @@ export async function checkoutSuccess(req, res) {
       });
     }
 
+    const existingOrder = await Order.findOne({ sessionId });
+    if (existingOrder) {
+      return res.status(200).json({
+        success: true,
+        message: "Order already exists",
+        orderNumber: existingOrder.orderNumber,
+      });
+    }
+
     if (session.payment_status === "paid") {
       if (session.metadata.couponId) {
-        const coupon = await Coupon.findByIdAndUpdate(
+        const coupon = await Coupon.findOneAndUpdate(
           {
             code: session.metadata.couponId,
             userId: session.metadata.userId,
@@ -146,18 +164,32 @@ export async function checkoutSuccess(req, res) {
       }
     }
 
-    await Order.create({
-      owner: session.metadata.userId,
-      products: JSON.parse(session.metadata.products).map((p) => {
-        return {
-          product: p.id,
-          quantity: p.quantity,
-          price: p.price,
-        };
-      }),
-      totalAmount: session.amount_total / 100,
-      stripeSessionId: session.id,
-    });
+    let created = false;
+    let order = null;
+
+    while (!created) {
+      try {
+        order = await Order.create({
+          owner: session.metadata.userId,
+          products: JSON.parse(session.metadata.products).map((p) => ({
+            product: p.id,
+            quantity: p.quantity,
+            price: p.price,
+          })),
+          totalAmount: session.amount_total / 100,
+          orderNumber: generateOrderNumber(),
+          sessionId: session.id,
+        });
+        created = true;
+      } catch (err) {
+        if (err.code === 11000) {
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    const orderNumber = order.orderNumber;
 
     await redis.del(`checkout_session_products_${session.metadata.userId}`);
     await redis.del(`checkout_session_coupon_${session.metadata.userId}`);
@@ -165,7 +197,7 @@ export async function checkoutSuccess(req, res) {
     return res.status(200).json({
       success: true,
       message: "Checkout successful",
-      data: session,
+      orderNumber,
     });
   } catch (error) {
     console.error("Error processing checkout:", error);

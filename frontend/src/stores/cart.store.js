@@ -14,11 +14,14 @@ export const useCartStore = create((set, get) => ({
   total: 0,
   subtotal: 0,
   isappliedCoupon: false,
-  stripePromise: loadStripe(
-    "pk_test_51RXsdaQR9pa6O03n53VROw3KfYgblWGCAoelH3t1JUHeMvDUUEAx59zwY85gAyeNpzT0JeMvky3N4SdGRXIYUKWM00bcqMHqjd"
-  ),
+  stripePromise: loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY),
   processingPayment: false,
   paymentError: false,
+  orderNumber: null,
+
+  setOderNumber: () => {
+    set({ orderNumber: null });
+  },
   getCartItems: async () => {
     try {
       const res = await axios.get("/cart");
@@ -34,8 +37,9 @@ export const useCartStore = create((set, get) => ({
     }
   },
   addToCart: async (product) => {
+    set({ loading: true });
+
     try {
-      set({ loading: true });
       const res = await axios.post("/cart", { productId: product._id });
       set((prev) => {
         const existingIndex = prev.cart.findIndex(
@@ -81,6 +85,7 @@ export const useCartStore = create((set, get) => ({
       toast.success("Product removed from cart successfully", {
         id: "remove-from-cart",
       });
+      set({ loading: false });
     } catch (error) {
       set({ loading: false });
       toast.error(
@@ -111,7 +116,7 @@ export const useCartStore = create((set, get) => ({
       await axios.delete("/cart/all");
       set({ cart: [] });
       get().calculateTotal();
-      toast.success("Cart cleared successfully", { id: "clear-cart" });
+      set({ loading: false });
     } catch (error) {
       set({ loading: false });
       toast.error(
@@ -193,12 +198,13 @@ export const useCartStore = create((set, get) => ({
       return;
     }
   },
-  handlePaymentSuccess: async () => {
+  handlePaymentSuccess: async (sessionId) => {
     try {
       set({ isProcessing: true });
-      await axios.post("/payments/checkout-success", {
+      const res = await axios.post("/payments/checkout-success", {
         sessionId,
       });
+      set({ orderNumber: res.data.orderNumber });
       get().clearCart();
     } catch (error) {
       console.log(error);

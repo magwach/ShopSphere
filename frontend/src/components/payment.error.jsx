@@ -52,7 +52,7 @@ export default function PaymentError({ type }) {
           <div className="space-y-4 mb-8">
             <button
               onClick={handleRetryPayment}
-              className="w-full flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg"
+              className="w-full flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-4 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg cursor-pointer"
             >
               <RefreshCw className="w-5 h-5" />
               Try Payment Again
@@ -61,7 +61,7 @@ export default function PaymentError({ type }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 onClick={handleViewCart}
-                className="flex items-center justify-center gap-2 bg-transparent border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02]"
+                className="flex items-center justify-center gap-2 bg-transparent border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] cursor-pointer"
               >
                 <ShoppingCart className="w-5 h-5" />
                 View Cart
@@ -69,7 +69,7 @@ export default function PaymentError({ type }) {
 
               <button
                 onClick={handleContinueShopping}
-                className="flex items-center justify-center gap-2 bg-transparent border-2 border-gray-500 text-gray-300 hover:bg-gray-500 hover:text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02]"
+                className="flex items-center justify-center gap-2 bg-transparent border-2 border-gray-500 text-gray-300 hover:bg-gray-500 hover:text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] cursor-pointer"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Continue Shopping

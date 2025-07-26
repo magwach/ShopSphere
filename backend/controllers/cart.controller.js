@@ -156,8 +156,8 @@ export async function clearCart(req, res) {
     }
     user.cartItems = [];
     await user.save();
-    await redis.del(`checkout_session_products_${user._id}`);
-    await redis.del(`checkout_session_coupon_${user._id}`);
+    await redis.del(`checkout_session_products_${user._id.toString()}`);
+    await redis.del(`checkout_session_coupon_${user._id.toString()}`);
     return res.status(200).json({
       success: true,
       message: "Cart cleared successfully",
