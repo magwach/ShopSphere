@@ -3,7 +3,6 @@ import axios from "../lib/axios.js";
 import { toast } from "react-hot-toast";
 
 import { loadStripe } from "@stripe/stripe-js";
-import { number } from "framer-motion";
 
 export const useCartStore = create((set, get) => ({
   loading: false,
@@ -29,15 +28,11 @@ export const useCartStore = create((set, get) => ({
       get().calculateTotal();
     } catch (error) {
       set({ cart: [] });
-      toast.error(
-        error?.response?.data?.message ||
-          "An error occurred while fetching cart items",
-        { id: "fetch-cart-items" }
-      );
     }
   },
   addToCart: async (product) => {
     set({ loading: true });
+    console.log(product._id);
 
     try {
       const res = await axios.post("/cart", { productId: product._id });

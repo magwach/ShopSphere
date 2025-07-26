@@ -32,13 +32,16 @@ export default function App() {
     allowedPaths.includes(location.pathname) ||
     location.pathname.startsWith("/category/");
 
-  const { user, checkAuthentication } = useUserStore();
+  const { user, checkAuthentication, isAuthenticated } = useUserStore();
   const { getCartItems } = useCartStore();
 
   useEffect(() => {
     checkAuthentication();
-    getCartItems();
   }, []);
+
+  useEffect(() => {
+    getCartItems();
+  }, [isAuthenticated]);
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
