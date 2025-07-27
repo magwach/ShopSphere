@@ -70,7 +70,7 @@ export default function AnalyticsTab() {
         />
         <AnalyticsCard
           title="Total Revenue"
-          value={`$${analyticsData.totalRevenue.toLocaleString()}`}
+          value={`Ksh ${analyticsData.totalRevenue.toLocaleString()}`}
           Icon={DollarSign}
           color="from-emerald-500 to-lime-700"
         />

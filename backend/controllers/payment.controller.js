@@ -44,7 +44,7 @@ export async function createCheckOutSession(req, res) {
 
       return {
         price_data: {
-          currency: "usd",
+          currency: "kes",
           product_data: {
             name: product.name,
             images: [product.image],
