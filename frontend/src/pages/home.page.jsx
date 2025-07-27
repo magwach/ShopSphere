@@ -1,15 +1,14 @@
 import CategoryItem from "../components/category.item.jsx";
 
 export default function HomePage() {
-
   const categories = [
-    { href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpeg" },
-    { href: "/t-shirts", name: "T-shirts", imageUrl: "/tshirts.jpeg" },
-    { href: "/shoes", name: "Shoes", imageUrl: "/shoes.jpeg" },
-    { href: "/glasses", name: "Glasses", imageUrl: "/glasses.jpeg" },
-    { href: "/jackets", name: "Jackets", imageUrl: "/jackets.jpeg" },
-    { href: "/suits", name: "Suits", imageUrl: "/suits.avif" },
-    { href: "/bags", name: "Bags", imageUrl: "/bags.jpeg" },
+    { href: "/Jeans", name: "Jeans", imageUrl: "/jeans.jpeg" },
+    { href: "/T-Shirts", name: "T-shirts", imageUrl: "/tshirts.jpeg" },
+    { href: "/Shoes", name: "Shoes", imageUrl: "/shoes.jpeg" },
+    { href: "/Glasses", name: "Glasses", imageUrl: "/glasses.jpeg" },
+    { href: "/Jackets", name: "Jackets", imageUrl: "/jackets.jpeg" },
+    { href: "/Suits", name: "Suits", imageUrl: "/suits.avif" },
+    { href: "/Bags", name: "Bags", imageUrl: "/bags.jpeg" },
   ];
   return (
     <div className="relative min-h-screen text-white overflow-hidden">

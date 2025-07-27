@@ -6,6 +6,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
 export const useCartStore = create((set, get) => ({
   loading: false,
+  fetchingItems: false,
   recommendationsLoading: false,
   cart: [],
   recommendations: [],
@@ -23,10 +24,13 @@ export const useCartStore = create((set, get) => ({
   },
   getCartItems: async () => {
     try {
+      set({ fetchingItems: true });
       const res = await axios.get("/cart");
       set({ cart: res.data.data });
       get().calculateTotal();
+      set({ fetchingItems: false });
     } catch (error) {
+      set({ fetchingItems: false });
       set({ cart: [] });
     }
   },

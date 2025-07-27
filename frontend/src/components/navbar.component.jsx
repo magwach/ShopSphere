@@ -47,13 +47,6 @@ export default function Navbar() {
           </Link>
 
           <nav className="flex flex-wrap items-center gap-4">
-            <Link
-              to={"/"}
-              className="text-gray-300 hover:text-emerald-400 transition duration-300 ease-in-out"
-            >
-              Home
-            </Link>
-
             {!adminBar && (
               <Link
                 className="bg-emerald-700 hover:bg-emerald-600 text-white py-2 px-4 rounded-md font-medium

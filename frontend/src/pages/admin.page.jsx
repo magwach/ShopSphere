@@ -1,22 +1,27 @@
-import { BarChart, PlusCircle, ShoppingBasket } from "lucide-react";
+import {
+  BarChart,
+  PlusCircle,
+  ShoppingBasket,
+  ChevronRight,
+} from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
 import AnalyticsTab from "../components/analytics.jsx";
 import CreateProductForm from "../components/create.product.jsx";
 import ProductsList from "../components/product.list.jsx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useUserStore } from "../stores/user.store.js";
 
 const tabs = [
-  { id: "create", label: "Create Product", icon: PlusCircle },
-  { id: "products", label: "Products", icon: ShoppingBasket },
-  { id: "analytics", label: "Analytics", icon: BarChart },
+  { id: "Create", label: "Create Product", icon: PlusCircle },
+  { id: "Products", label: "Products", icon: ShoppingBasket },
+  { id: "Analytics", label: "Analytics", icon: BarChart },
 ];
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("create");
+  const [activeTab, setActiveTab] = useState("Create");
   const { isAuthenticated, authLoading } = useUserStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -28,6 +33,15 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-16">
+        <nav className="flex items-center text-sm text-gray-400 mb-4">
+          <Link to="/" className="text-emerald-500 hover:underline">
+            Home
+          </Link>
+          <ChevronRight className="mx-2 h-4 w-4 text-gray-500" />
+          <span className="text-gray-300">Admin</span>
+          <ChevronRight className="mx-2 h-4 w-4 text-gray-500" />
+          <span className="text-gray-300">{activeTab}</span>
+        </nav>
         <motion.h1
           className="text-4xl font-bold mb-8 text-emerald-400 text-center"
           initial={{ opacity: 0, y: -20 }}
@@ -53,9 +67,9 @@ export default function AdminDashboard() {
             </button>
           ))}
         </div>
-        {activeTab === "create" && <CreateProductForm />}
-        {activeTab === "products" && <ProductsList />}
-        {activeTab === "analytics" && <AnalyticsTab />}
+        {activeTab === "Create" && <CreateProductForm />}
+        {activeTab === "Products" && <ProductsList />}
+        {activeTab === "Analytics" && <AnalyticsTab />}
       </div>
     </div>
   );

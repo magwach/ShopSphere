@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
+import { ChevronRight, Loader } from "lucide-react";
 import { useCartStore } from "../stores/cart.store.js";
 import PeopleAlsoBought from "../components/people.also.bought.jsx";
 import OrderSummary from "../components/order.summary.jsx";
 import GiftCouponCard from "../components/gift.coupon.jsx";
 import CartItem from "../components/cart.item.jsx";
 import EmptyCartUI from "../components/empty.cart.jsx";
-import { useEffect } from "react";
 import { useUserStore } from "../stores/user.store.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import ShopSphereSpinner from "../components/loading.jsx";
 
 export default function CartPage() {
-  const { cart } = useCartStore();
+  const { cart, fetchingItems } = useCartStore();
   const { isAuthenticated, authLoading } = useUserStore();
 
   const navigate = useNavigate();
@@ -25,6 +25,13 @@ export default function CartPage() {
   return (
     <div className="py-8 md:py-16">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+        <nav className="flex items-center text-sm text-gray-400 mb-4">
+          <Link to="/" className="text-emerald-500 hover:underline">
+            Home
+          </Link>
+          <ChevronRight className="mx-2 h-4 w-4 text-gray-500" />
+          <span className="text-gray-300">Cart</span>
+        </nav>
         <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
           <motion.div
             className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl"
@@ -32,7 +39,11 @@ export default function CartPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {cart.length === 0 ? (
+            {fetchingItems ? (
+              <div className="flex items-center justify-center w-full h-60 col-span-full">
+                <Loader className="animate-spin text-emerald-500 w-6 h-6" />
+              </div>
+            ) : cart.length === 0 ? (
               <EmptyCartUI />
             ) : (
               <div className="space-y-6">
