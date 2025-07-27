@@ -50,10 +50,12 @@ export async function getDailySalesData(startDate, endDate) {
       {
         $match: {
           createdAt: {
-            $gt: endDate,
-            $lt: startDate,
+            $gt: startDate,
+            $lt: endDate,
           },
         },
+      },
+      {
         $group: {
           _id: {
             $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
