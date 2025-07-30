@@ -1,3 +1,4 @@
+import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import HomePage from "./pages/home.page.jsx";

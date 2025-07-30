@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "../lib/axios";
-import toast from "react-hot-toast";
 import { Loader } from "lucide-react";
-import ProductCard from "./product.card.jsx";
 import { useCartStore } from "../stores/cart.store.js";
+import ProductSlider from "./product.slider.jsx";
 
 export default function PeopleAlsoBought() {
   const {
@@ -16,22 +14,23 @@ export default function PeopleAlsoBought() {
     fetchRecommendations();
   }, []);
 
-  return isLoading ? (
-    <Loader className="animate-spin text-emerald-500" />
-  ) : (
+  return (
     <div className="mt-8">
-      <h3 className="text-2xl font-semibold text-emerald-400">
-        People also bought
-      </h3>
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg: grid-col-3">
-        {recommendations.length > 0 ? (
-          recommendations.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))
-        ) : (
-          <p className="text-gray-500">No recommendations available</p>
-        )}
-      </div>
+      <h2 className="text-2xl font-bold text-emerald-500 text-center">
+        People Also Bought
+      </h2>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-48">
+          <Loader className="animate-spin text-emerald-500 w-6 h-6" />
+        </div>
+      ) : recommendations.length > 0 ? (
+        <ProductSlider Products={recommendations} />
+      ) : (
+        <div className="flex justify-center items-center h-48">
+          <p className="text-gray-500 text-sm">No recommendations available</p>
+        </div>
+      )}
     </div>
   );
 }

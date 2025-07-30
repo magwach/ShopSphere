@@ -36,7 +36,6 @@ export const useCartStore = create((set, get) => ({
   },
   addToCart: async (product) => {
     set({ loading: true });
-    console.log(product._id);
 
     try {
       const res = await axios.post("/cart", { productId: product._id });

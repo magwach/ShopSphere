@@ -25,6 +25,7 @@ export async function getAllFeturedProducts(req, res) {
   try {
     let featuredProducts = await redis.get("featured_products");
     if (featuredProducts) {
+
       return res.status(200).json({
         success: true,
         message: "Products fetched successfully",
@@ -35,9 +36,10 @@ export async function getAllFeturedProducts(req, res) {
     featuredProducts = await Product.find({ isFeatured: true }).lean();
 
     if (!featuredProducts) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "No featured products found",
+        data: [],
       });
     }
 
@@ -47,7 +49,14 @@ export async function getAllFeturedProducts(req, res) {
       message: "Featured products fetched successfully",
       data: featuredProducts,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error fetching featured products:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 }
 
 export async function createProduct(req, res) {
@@ -151,7 +160,7 @@ export async function getRecommendedProducts(req, res) {
         },
       },
       {
-        $sample: { size: 3 },
+        $sample: { size: 10 },
       },
       {
         $project: {
