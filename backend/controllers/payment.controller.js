@@ -208,3 +208,21 @@ export async function checkoutSuccess(req, res) {
     });
   }
 }
+
+export async function cancelCheckout(req, res) {
+  try {
+    await redis.del(`checkout_session_products_${req.user._id}`);
+    await redis.del(`checkout_session_coupon_${req.user._id}`);
+    return res.status(200).json({
+      success: true,
+      message: "Checkout cancelled successfully",
+    });
+  } catch (error) {
+    console.error("Error cancelling checkout:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}

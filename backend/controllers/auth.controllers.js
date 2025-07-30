@@ -57,8 +57,6 @@ export async function logout(req, res) {
 
     const userId = decoded.id;
     await redis.del(`refresh_token:${userId}`);
-    await redis.del(`checkout_session_products_${userId}`);
-    await redis.del(`checkout_session_coupon_${userId}`);
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
     return res

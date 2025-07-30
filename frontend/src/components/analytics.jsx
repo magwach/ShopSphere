@@ -24,6 +24,7 @@ export default function AnalyticsTab() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [dailyData, setDailyData] = useState([]);
+  const [chartHeight, setChartHeight] = useState(400);
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
@@ -38,6 +39,23 @@ export default function AnalyticsTab() {
       }
     };
     fetchAnalyticsData();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth < 480) {
+        setChartHeight(250);
+      } else if (screenWidth < 768) {
+        setChartHeight(300);
+      } else {
+        setChartHeight(400);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (isLoading)
@@ -81,20 +99,78 @@ export default function AnalyticsTab() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={dailyData}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <LineChart
+            data={dailyData}
+            margin={{ top: 20, right: 40, left: 40, bottom: 50 }} // more breathing room
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" stroke="#D1D5DB" />
-            <YAxis yAxisId="left" stroke="#D1D5DB" />
-            <YAxis yAxisId="right" orientation="right" stroke="#D1D5DB" />
-            <Tooltip />
-            <Legend />
+
+            <XAxis
+              dataKey="date"
+              stroke="#D1D5DB"
+              label={{
+                value: "Date",
+                position: "bottom",
+                dy: 25, // push down label
+                fill: "#10B981",
+                fontSize: chartHeight < 300 ? 10 : 12,
+              }}
+              tick={{ fontSize: chartHeight < 300 ? 10 : 12, fill: "#D1D5DB" }}
+            />
+
+            <YAxis
+              yAxisId="left"
+              stroke="#D1D5DB"
+              label={{
+                value: "Sales",
+                angle: -90,
+                position: "outsideLeft",
+                dx: -30, // pull left
+                fill: "#10B981",
+                fontSize: chartHeight < 300 ? 10 : 12,
+              }}
+              tick={{ fontSize: chartHeight < 300 ? 10 : 12, fill: "#D1D5DB" }}
+            />
+
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              stroke="#D1D5DB"
+              label={{
+                value: "Revenue (KES)",
+                angle: 90,
+                position: "outsideRight",
+                dx: 30, // pull right
+                fill: "#10B981",
+                fontSize: chartHeight < 300 ? 10 : 12,
+              }}
+              tick={{ fontSize: chartHeight < 300 ? 10 : 12, fill: "#D1D5DB" }}
+            />
+
+            <Tooltip
+              wrapperStyle={{ fontSize: 12 }}
+              contentStyle={{
+                backgroundColor: "#1F2937",
+                borderColor: "#10B981",
+              }}
+              labelStyle={{ color: "#10B981" }}
+            />
+            <Legend
+              wrapperStyle={{
+                fontSize: 12,
+                bottom: 0,
+                right: 30,
+                paddingTop: 20,
+                position: "absolute",
+              }}
+            />
             <Line
               yAxisId="left"
               type="monotone"
               dataKey="sales"
               stroke="#10B981"
-              activeDot={{ r: 8 }}
+              activeDot={{ r: 5 }}
               name="Sales"
             />
             <Line
@@ -102,7 +178,7 @@ export default function AnalyticsTab() {
               type="monotone"
               dataKey="revenue"
               stroke="#3B82F6"
-              activeDot={{ r: 8 }}
+              activeDot={{ r: 5 }}
               name="Revenue"
             />
           </LineChart>

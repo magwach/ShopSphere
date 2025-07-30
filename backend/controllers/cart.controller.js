@@ -45,8 +45,6 @@ export async function addToCart(req, res) {
       user.cartItems.push({ product: productId });
     }
     await user.save();
-    await redis.del(`checkout_session_products_${user._id}`);
-    await redis.del(`checkout_session_coupon_${user._id}`);
     return res.status(200).json({
       success: true,
       message: "Product added to cart successfully",
@@ -76,8 +74,6 @@ export async function deleteFromCart(req, res) {
     user.cartItems = user.cartItems.filter(
       (item) => item.product.toString() !== productId
     );
-    await redis.del(`checkout_session_products_${user._id}`);
-    await redis.del(`checkout_session_coupon_${user._id}`);
     await user.save();
     return res.status(200).json({
       success: true,
@@ -118,8 +114,6 @@ export async function updateQuantity(req, res) {
         (item) => item.product.toString() !== id
       );
       await user.save();
-      await redis.del(`checkout_session_products_${user._id}`);
-      await redis.del(`checkout_session_coupon_${user._id}`);
       return res.status(200).json({
         success: true,
         message: "Cart item removed successfully",
@@ -128,8 +122,6 @@ export async function updateQuantity(req, res) {
     }
     cartItem.quantity = quantity;
     await user.save();
-    await redis.del(`checkout_session_products_${user._id}`);
-    await redis.del(`checkout_session_coupon_${user._id}`);
     return res.status(200).json({
       success: true,
       message: "Cart item quantity updated successfully",
@@ -156,8 +148,6 @@ export async function clearCart(req, res) {
     }
     user.cartItems = [];
     await user.save();
-    await redis.del(`checkout_session_products_${user._id.toString()}`);
-    await redis.del(`checkout_session_coupon_${user._id.toString()}`);
     return res.status(200).json({
       success: true,
       message: "Cart cleared successfully",

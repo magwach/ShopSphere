@@ -1,6 +1,7 @@
 import { ArrowLeft, RefreshCw, ShoppingCart, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store.js";
+import axios from "../lib/axios.js";
 
 export default function PaymentError({ type }) {
   const { handlePayment } = useCartStore();
@@ -13,11 +14,22 @@ export default function PaymentError({ type }) {
 
   const handleContinueShopping = () => {
     navigate("/");
+    cancelCheckout();
   };
 
   const handleViewCart = () => {
+    cancelCheckout();
     navigate("/cart");
   };
+
+  const cancelCheckout = async () => {
+    try {
+      await axios.post("/payments/checkout-cancel");
+    } catch (error) {
+      console.error("Error cancelling checkout:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.3)_0%,rgba(10,80,60,0.2)_45%,rgba(0,0,0,0.1)_100%)] flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
