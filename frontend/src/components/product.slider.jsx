@@ -6,6 +6,7 @@ import { useUserStore } from "../stores/user.store.js";
 export default function ProductSlider({ Products }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(4);
+  const [direction, setDirection] = useState(1);
 
   const { addToCart, loading } = useCartStore();
   const { user } = useUserStore();
@@ -23,13 +24,22 @@ export default function ProductSlider({ Products }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => {
-        const nextIndex = prevIndex + itemsPerPage;
-        if (nextIndex >= Products.length) {
-          return 0;
+        const nextIndex = prevIndex + direction;
+
+        if (nextIndex > Products.length - itemsPerPage) {
+          setDirection(-1);
+          return prevIndex - 1;
         }
+
+        if (nextIndex < 0) {
+          setDirection(1);
+          return prevIndex + 1;
+        }
+
         return nextIndex;
       });
-    }, 7000);
+    }, 3000);
+
     const handleResize = () => {
       if (window.innerWidth < 640) setItemsPerPage(1);
       else if (window.innerWidth < 1024) setItemsPerPage(2);
@@ -43,18 +53,34 @@ export default function ProductSlider({ Products }) {
       window.removeEventListener("resize", handleResize);
       clearInterval(interval);
     };
-  }, []);
+  }, [direction, itemsPerPage, Products.length]);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => prevIndex + itemsPerPage);
+    setCurrentIndex((prevIndex) => {
+      const next = prevIndex + 1;
+      if (next > Products.length - itemsPerPage) {
+        return prevIndex;
+      }
+      setDirection(1);
+      return next;
+    });
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => prevIndex - itemsPerPage);
+    setCurrentIndex((prevIndex) => {
+      const next = prevIndex - 1;
+      if (next < 0) {
+        return prevIndex;
+      }
+      setDirection(-1);
+      return next;
+    });
   };
 
   const isStartDisabled = currentIndex === 0;
-  const isEndDisabled = currentIndex >= Products.length - itemsPerPage;
+  const isEndDisabled =
+    currentIndex >= Products.length - itemsPerPage ||
+    Products.length <= itemsPerPage;
 
   return (
     <div className="py-12">
