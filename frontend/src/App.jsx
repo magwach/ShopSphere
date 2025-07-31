@@ -38,11 +38,9 @@ export default function App() {
 
   useEffect(() => {
     checkAuthentication();
-  }, []);
-
-  useEffect(() => {
     getCartItems();
   }, [isAuthenticated]);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
@@ -55,7 +53,10 @@ export default function App() {
 
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/login"
+            element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />}
+          />
           <Route
             path="/admin-login"
             element={
@@ -66,7 +67,10 @@ export default function App() {
               )
             }
           />
-          <Route path="/signup" element={<SignUpPage />} />
+          <Route
+            path="/signup"
+            element={isAuthenticated ? <Navigate to="/" /> : <SignUpPage />}
+          />
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route
             path="/admin"

@@ -35,8 +35,8 @@ export const useUserStore = create((set, get) => ({
       if (!response.data.success) {
         throw new Error(response.data.message || "Signup failed");
       }
-      set({ user: response.data.user, loading: false });
-      toast.success("Signup successful");
+      set({ user: response.data.user, loading: false, isAuthenticated: true });
+      toast.success("Account created successfully");
       setFormData({
         name: "",
         email: "",
@@ -44,7 +44,7 @@ export const useUserStore = create((set, get) => ({
         confirmPassword: "",
       });
     } catch (error) {
-      set({ loading: false });
+      set({ loading: false, isAuthenticated: false });
       toast.error(
         error?.response?.data?.error?.[0] ||
           error?.response?.data?.message ||
@@ -135,7 +135,7 @@ export const useUserStore = create((set, get) => ({
         throw new Error(response.data.message || "Logout failed");
       }
       set({ user: null, isAuthenticated: false });
-      toast.success("Sucessfully logged out");
+      toast.success("Sucessfully logged out", { id: "session-expired" });
     } catch (error) {
       set({ isAuthenticated: true });
 
