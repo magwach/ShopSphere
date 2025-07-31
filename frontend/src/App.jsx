@@ -38,9 +38,11 @@ export default function App() {
 
   useEffect(() => {
     checkAuthentication();
+  }, []);
+
+  useEffect(() => {
     getCartItems();
   }, [isAuthenticated]);
-
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">

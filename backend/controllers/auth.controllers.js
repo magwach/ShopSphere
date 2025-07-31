@@ -145,9 +145,9 @@ export async function refreshToken(req, res) {
 export async function getProfile(req, res) {
   try {
     if (!req.user) {
-      return res.status(200).json({ success: false });
+      return res.status(401).json({ success: false });
     }
-    res.status(200).json({
+    res.status(200).json({ 
       success: true,
       data: req.user,
     });
