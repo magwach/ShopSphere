@@ -107,7 +107,7 @@ export default function EmailVerificationPage() {
   const handleRedirect = () => {
     setTimeout(() => {
       window.location.reload();
-    }, 3000);
+    }, 4000);
   };
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function EmailVerificationPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full text-center"
         >
-          <div className="bg-black bg-opacity-40 backdrop-blur-lg rounded-2xl p-8 border border-emerald-500 border-opacity-20 shadow-2xl">
+          <div className="bg-black/20 bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 border border-emerald-500 border-opacity-20 shadow-2xl">
             <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <Check className="w-10 h-10 text-white" />
             </div>
@@ -168,8 +168,7 @@ export default function EmailVerificationPage() {
         transition={{ duration: 0.6 }}
         className="max-w-md w-full"
       >
-        <div className="bg-black bg-opacity-40 backdrop-blur-lg rounded-2xl p-8 border border-emerald-500 border-opacity-20 shadow-2xl">
-          {/* Header */}
+        <div className="bg-black/20 bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 border border-emerald-500 border-opacity-20 shadow-2xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-emerald-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail className="w-8 h-8 text-emerald-400" />
@@ -182,6 +181,7 @@ export default function EmailVerificationPage() {
             <h2 className="text-2xl font-bold text-white mb-4">
               Verify Your Email
             </h2>
+            <p className="text-gray-300 mb-2">To complete your account setup</p>
 
             <p className="text-gray-300 mb-2">
               We've sent a 6-digit verification code to
@@ -189,7 +189,6 @@ export default function EmailVerificationPage() {
             <p className="text-emerald-400 font-medium">{userEmail}</p>
           </div>
 
-          {/* Code Input */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-300 mb-4 text-center">
               Enter verification code
@@ -215,7 +214,6 @@ export default function EmailVerificationPage() {
             </div>
           </div>
 
-          {/* Submit Button */}
           <button
             onClick={handleManualSubmit}
             disabled={isLoading || code.join("").length !== 6}
@@ -234,7 +232,6 @@ export default function EmailVerificationPage() {
             )}
           </button>
 
-          {/* Resend Code */}
           <div className="text-center">
             <p className="text-gray-400 text-sm mb-3">
               Didn't receive the code?
@@ -257,7 +254,6 @@ export default function EmailVerificationPage() {
             )}
           </div>
 
-          {/* Help Text */}
           <div className="mt-6 pt-6 border-t border-gray-700">
             <p className="text-gray-400 text-xs text-center">
               Check your spam folder if you don't see the email.

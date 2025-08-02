@@ -51,7 +51,7 @@ export default function HomePage() {
 
           {fetchingProducts ? (
             <Loader className="animate-spin text-emerald-500 w-6 h-6" />
-          ) : products.length > 0 ? (
+          ) : products?.length > 0 ? (
             <ProductSlider Products={products} />
           ) : (
             <p className="text-center text-lg text-gray-300">
