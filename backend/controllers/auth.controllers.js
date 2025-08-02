@@ -1,6 +1,7 @@
 import redis from "../db/redis.js";
 import User from "../models/user.model.js";
 import createRandomCode from "../utils/create.random.code.js";
+import { sendVerificationEmail } from "../utils/send.emails.js";
 import {
   generateToken,
   setCookies,
@@ -88,16 +89,19 @@ export async function signup(req, res) {
       email,
       password,
       verificationToken,
-      verificationTokenExpiresAt: Date.now() + 60 * 60 * 1000,
+      verificationTokenExpiresAt: Date.now() + 15 * 60 * 1000,
     });
-    user.password = undefined;
     const { accessToken, refreshToken } = generateToken(user._id);
     await storeToken(user._id, refreshToken);
     setCookies(res, accessToken, refreshToken);
+    await sendVerificationEmail(user.email, user.name, verificationToken);
     return res.status(201).json({
       success: true,
       message: "User created successfully",
-      data: user,
+      data: {
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (error) {
     console.error("Error in signup:", error);

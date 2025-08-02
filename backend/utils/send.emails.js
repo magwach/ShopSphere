@@ -1,0 +1,21 @@
+import { VERIFICATION_EMAIL_TEMPLATE } from "./email.templates.js";
+import { apiInstance } from "./brevo.config.js";
+
+export async function sendVerificationEmail(email, name, verificationToken) {
+  const sendSmtpEmail = {
+    to: [{ email, name }],
+    sender: { name: "Shop Sphere", email: "shopsphereke@gmail.com" },
+    subject: "verify email",
+    htmlContent: VERIFICATION_EMAIL_TEMPLATE.replace(
+      "{verificationCode}",
+      verificationToken
+    ),
+    category: "verification",
+  };
+
+  try {
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+  } catch (error) {
+    throw new Error("Failed to send email:", error);
+  }
+}

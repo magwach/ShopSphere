@@ -25,6 +25,8 @@
     "mailtrap": "^4.2.0",
     "mongoose": "^8.15.1",
     "nanoid": "^5.1.5",
+    "resend": "^4.7.0",
+    "sib-api-v3-sdk": "^8.5.0",
     "stripe": "^18.2.0"
   },
   "devDependencies": {
