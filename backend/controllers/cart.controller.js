@@ -1,5 +1,3 @@
-import redis from "../db/redis.js";
-
 export async function getAllCartItems(req, res) {
   try {
     const user = req.user;

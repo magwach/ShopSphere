@@ -5,7 +5,7 @@ export async function sendVerificationEmail(email, name, verificationToken) {
   const sendSmtpEmail = {
     to: [{ email, name }],
     sender: { name: "Shop Sphere", email: "shopsphereke@gmail.com" },
-    subject: "verify email",
+    subject: "Verify Your Email",
     htmlContent: VERIFICATION_EMAIL_TEMPLATE.replace(
       "{verificationCode}",
       verificationToken

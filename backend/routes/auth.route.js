@@ -5,6 +5,8 @@ import {
   signup,
   refreshToken,
   getProfile,
+  verifyEmail,
+  resendCode,
 } from "../controllers/auth.controllers.js";
 import { protectedRoute } from "../middleware/auth.middleware.js";
 
@@ -15,6 +17,10 @@ authRouter.post("/signup", signup);
 authRouter.post("/login", login);
 
 authRouter.post("/logout", logout);
+
+authRouter.post("/verify-email", verifyEmail);
+
+authRouter.post("/resend-verification-email", resendCode);
 
 authRouter.post("/refresh-token", refreshToken);
 

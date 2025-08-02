@@ -3,10 +3,13 @@ import CategoryItem from "../components/category.item.jsx";
 import { useProductStore } from "../stores/product.store.js";
 import { useEffect } from "react";
 import ProductSlider from "../components/product.slider.jsx";
+import { useUserStore } from "../stores/user.store.js";
+import EmailVerificationPage from "../components/verify.email.jsx";
 
 export default function HomePage() {
   const { fetchFeaturedProducts, products, fetchingProducts } =
     useProductStore();
+  const { user } = useUserStore();
 
   const categories = [
     { href: "/Jeans", name: "Jeans", imageUrl: "/jeans.jpeg" },
@@ -21,6 +24,11 @@ export default function HomePage() {
   useEffect(() => {
     fetchFeaturedProducts();
   }, [fetchFeaturedProducts]);
+
+  if (user && !user.isVerified) {
+    return <EmailVerificationPage />;
+  }
+
   return (
     <div className="relative min-h-screen text-white overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

@@ -36,7 +36,6 @@ export const useUserStore = create((set, get) => ({
         throw new Error(response.data.message || "Signup failed");
       }
       set({ user: response.data.user, loading: false, isAuthenticated: true });
-      toast.success("Account created successfully");
       setFormData({
         name: "",
         email: "",

@@ -89,7 +89,7 @@ export async function signup(req, res) {
       email,
       password,
       verificationToken,
-      verificationTokenExpiresAt: Date.now() + 15 * 60 * 1000,
+      verificationTokenExpiresAt: Date.now() + 3 * 60 * 1000,
     });
     const { accessToken, refreshToken } = generateToken(user._id);
     await storeToken(user._id, refreshToken);
@@ -98,9 +98,12 @@ export async function signup(req, res) {
     return res.status(201).json({
       success: true,
       message: "User created successfully",
-      data: {
+      user: {
         name: user.name,
         email: user.email,
+        isVerified: user.isVerified,
+        cartItems: user.cartItems,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -113,6 +116,31 @@ export async function signup(req, res) {
         error: messages,
       });
     }
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function verifyEmail (req, res) {
+  try {
+    const { token } = req.body;
+    const user = await User.findOne({ verificationToken: token });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid token" });
+    }
+    if (user.verificationTokenExpiresAt < Date.now()) {
+      return res.status(400).json({ success: false, message: "Token expired" });
+    }
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await user.save();
+    return res.status(200).json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    console.error("Error in verifyEmail:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -146,6 +174,29 @@ export async function refreshToken(req, res) {
     });
   } catch (error) {
     console.error("Error in refreshToken:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function resendCode(req, res) {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    const verificationToken = createRandomCode();
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpiresAt = Date.now() + 3 * 60 * 1000;
+    await user.save();
+    await sendVerificationEmail(user.email, user.name, verificationToken);
+    return res.status(200).json({ success: true, message: "Verification code regenerated successfully" });
+  } catch (error) {
+    console.error("Error in regenerateCode:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
