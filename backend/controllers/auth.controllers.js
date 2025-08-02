@@ -1,5 +1,6 @@
 import redis from "../db/redis.js";
 import User from "../models/user.model.js";
+import createRandomCode from "../utils/create.random.code.js";
 import {
   generateToken,
   setCookies,
@@ -81,7 +82,14 @@ export async function signup(req, res) {
         .status(400)
         .json({ success: false, message: "User already exists" });
     }
-    let user = await User.create({ name, email, password });
+    const verificationToken = createRandomCode();
+    let user = await User.create({
+      name,
+      email,
+      password,
+      verificationToken,
+      verificationTokenExpiresAt: Date.now() + 60 * 60 * 1000,
+    });
     user.password = undefined;
     const { accessToken, refreshToken } = generateToken(user._id);
     await storeToken(user._id, refreshToken);
@@ -147,7 +155,7 @@ export async function getProfile(req, res) {
     if (!req.user) {
       return res.status(401).json({ success: false });
     }
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
       data: req.user,
     });

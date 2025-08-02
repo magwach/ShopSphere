@@ -4,8 +4,7 @@ import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import createDBCoupon from "../utils/create.db.coupon.js";
 import createStripeCoupon from "../utils/create.stripe.coupon.js";
-
-import { customAlphabet } from "nanoid";
+import createRandomCode from "../utils/create.random.code.js";
 
 export async function createCheckOutSession(req, res) {
   try {
@@ -128,10 +127,6 @@ export async function createCheckOutSession(req, res) {
 export async function checkoutSuccess(req, res) {
   const { sessionId } = req.body;
 
-  const generateOrderNumber = customAlphabet(
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-    6
-  );
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
@@ -177,7 +172,7 @@ export async function checkoutSuccess(req, res) {
             price: p.price,
           })),
           totalAmount: session.amount_total / 100,
-          orderNumber: generateOrderNumber(),
+          orderNumber: createRandomCode(),
           sessionId: session.id,
         });
         created = true;
