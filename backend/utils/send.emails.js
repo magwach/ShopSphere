@@ -1,4 +1,5 @@
 import {
+  PASSWORD_RESET_REQUEST_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
   WELCOME_EMAIL_TEMPLATE,
 } from "./email.templates.js";
@@ -33,6 +34,25 @@ export async function sendWelcomeEmail(email, name) {
       process.env.CLIENT_URL
     ),
     category: "welcome",
+  };
+
+  try {
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+  } catch (error) {
+    throw new Error("Failed to send email:", error);
+  }
+}
+
+export async function sendResetPasswordCode(email, name, resetPasswordToken) {
+  const sendSmtpEmail = {
+    to: [{ email, name }],
+    sender: { name: "Shop Sphere", email: "shopsphereke@gmail.com" },
+    subject: "Reset Your Password",
+    htmlContent: PASSWORD_RESET_REQUEST_TEMPLATE.replace(
+      "{resetCode}",
+      resetPasswordToken
+    ).replace("{name}", name),
+    category: "reset-password",
   };
 
   try {

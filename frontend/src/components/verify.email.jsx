@@ -66,7 +66,7 @@ export default function EmailVerificationPage() {
   const handleVerification = async (verificationCode) => {
     setIsLoading(true);
     try {
-      await axios.post("/auth/verify-email", {
+      await axios.post("/auth/verify-email-code", {
         token: verificationCode,
       });
       setIsVerified(true);

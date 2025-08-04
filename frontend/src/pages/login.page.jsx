@@ -116,6 +116,15 @@ export default function LoginPage() {
               </div>
             </div>
 
+            <div className="mt-2 text-right">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-emerald-400 hover:text-emerald-300"
+              >
+                Forgot your password?
+              </Link>
+            </div>
+
             <button
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent 

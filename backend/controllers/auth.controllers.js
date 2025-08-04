@@ -2,6 +2,7 @@ import redis from "../db/redis.js";
 import User from "../models/user.model.js";
 import createRandomCode from "../utils/create.random.code.js";
 import {
+  sendResetPasswordCode,
   sendVerificationEmail,
   sendWelcomeEmail,
 } from "../utils/send.emails.js";
@@ -133,34 +134,6 @@ export async function signup(req, res) {
   }
 }
 
-export async function verifyEmail(req, res) {
-  try {
-    const { token } = req.body;
-    const user = await User.findOne({ verificationToken: token });
-    if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid token" });
-    }
-    if (user.verificationTokenExpiresAt < Date.now()) {
-      return res.status(400).json({ success: false, message: "Token expired" });
-    }
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    user.verificationTokenExpiresAt = undefined;
-    await sendWelcomeEmail(user.email, user.name);
-    await user.save();
-    return res
-      .status(200)
-      .json({ success: true, message: "Email verified successfully" });
-  } catch (error) {
-    console.error("Error in verifyEmail:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-}
-
 export async function refreshToken(req, res) {
   try {
     const refresh_token = req.cookies.refreshToken;
@@ -194,7 +167,35 @@ export async function refreshToken(req, res) {
   }
 }
 
-export async function resendCode(req, res) {
+export async function verifyEmail(req, res) {
+  try {
+    const { token } = req.body;
+    const user = await User.findOne({ verificationToken: token });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid token" });
+    }
+    if (user.verificationTokenExpiresAt < Date.now()) {
+      return res.status(400).json({ success: false, message: "Token expired" });
+    }
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await sendWelcomeEmail(user.email, user.name);
+    await user.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    console.error("Error in verifyEmail:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function resendEmailCode(req, res) {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -214,6 +215,87 @@ export async function resendCode(req, res) {
     });
   } catch (error) {
     console.error("Error in regenerateCode:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function resetPasswordCode(req, res) {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const resetPasswordToken = createRandomCode();
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordExpiresAt = Date.now() + 3 * 60 * 1000;
+    await user.save();
+    await sendResetPasswordCode(user.email, user.name, resetPasswordToken);
+    return res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    console.error("Error in verifyEmail:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function verifyResetPasswordCode(req, res) {
+  const { token } = req.body;
+  try {
+    const user = await User.findOne({ resetPasswordToken: token });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid token" });
+    }
+    if (user.resetPasswordExpiresAt < Date.now()) {
+      return res.status(400).json({ success: false, message: "Token expired" });
+    }
+    return res.status(200).json({ success: true, message: "Token verified" });
+  } catch (error) {
+    console.error("Error in verifyResetPasswordCode:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function resetPassword(req, res) {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    if (user.password === password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password cannot be same as old password",
+      });
+    }
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiresAt = undefined;
+    await user.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

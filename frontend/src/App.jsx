@@ -16,6 +16,7 @@ import CategoryPage from "./pages/category.page.jsx";
 import { useEffect } from "react";
 import CartPage from "./pages/cart.page.jsx";
 import { useCartStore } from "./stores/cart.store.js";
+import ForgotPasswordPage from "./pages/forgot.password.page.jsx";
 
 export default function App() {
   const location = useLocation();
@@ -84,6 +85,7 @@ export default function App() {
               )
             }
           />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/success" element={<PurchaseSuccessPage />} />
           <Route path="/purchase-cancelled" element={<PurchaseCancelPage />} />
