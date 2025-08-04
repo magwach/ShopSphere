@@ -28,7 +28,13 @@ export async function login(req, res) {
       const { accessToken, refreshToken } = generateToken(user._id);
       await storeToken(user._id, refreshToken);
       setCookies(res, accessToken, refreshToken);
+      user.lastLogin = Date.now();
+      await user.save();
       user.password = undefined;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpiresAt = undefined;
+      user.verificationToken = undefined;
+      user.verificationTokenExpiresAt = undefined;
       return res.status(200).json({
         success: true,
         message: "Login successful",
