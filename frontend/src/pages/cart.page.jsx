@@ -16,6 +16,8 @@ export default function CartPage() {
 
   const navigate = useNavigate();
 
+  console.log(cart);
+
   if (authLoading || isAuthenticated === null) return <ShopSphereSpinner />;
   if (!isAuthenticated) {
     navigate("/login");

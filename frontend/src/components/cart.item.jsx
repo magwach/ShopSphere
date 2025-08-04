@@ -59,7 +59,7 @@ export default function CartItem({ item }) {
           <p className="text-base font-medium text-white hover:text-emerald-400 hover:underline">
             {item.name}
           </p>
-          <p className="text-sm text-gray-400">{item.description}</p>
+          <p className="text-sm text-gray-400">{item.product.description}</p>
 
           <div className="flex items-center gap-4">
             <button
