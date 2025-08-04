@@ -1,7 +1,10 @@
 import redis from "../db/redis.js";
 import User from "../models/user.model.js";
 import createRandomCode from "../utils/create.random.code.js";
-import { sendVerificationEmail } from "../utils/send.emails.js";
+import {
+  sendVerificationEmail,
+  sendWelcomeEmail,
+} from "../utils/send.emails.js";
 import {
   generateToken,
   setCookies,
@@ -124,7 +127,7 @@ export async function signup(req, res) {
   }
 }
 
-export async function verifyEmail (req, res) {
+export async function verifyEmail(req, res) {
   try {
     const { token } = req.body;
     const user = await User.findOne({ verificationToken: token });
@@ -137,8 +140,11 @@ export async function verifyEmail (req, res) {
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpiresAt = undefined;
+    await sendWelcomeEmail(user.email, user.name);
     await user.save();
-    return res.status(200).json({ success: true, message: "Email verified successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully" });
   } catch (error) {
     console.error("Error in verifyEmail:", error);
     return res.status(500).json({
@@ -187,14 +193,19 @@ export async function resendCode(req, res) {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     const verificationToken = createRandomCode();
     user.verificationToken = verificationToken;
     user.verificationTokenExpiresAt = Date.now() + 3 * 60 * 1000;
     await user.save();
     await sendVerificationEmail(user.email, user.name, verificationToken);
-    return res.status(200).json({ success: true, message: "Verification code regenerated successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Verification code regenerated successfully",
+    });
   } catch (error) {
     console.error("Error in regenerateCode:", error);
     return res.status(500).json({
