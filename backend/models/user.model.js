@@ -74,16 +74,16 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (password) {
+  if (!password) {
+    throw new Error("Password is required for comparison");
+  }
   try {
-    if (!password) {
-      throw new Error("Password is required for comparison");
-    }
     return await bcrypt.compare(password, this.password);
   } catch (error) {
-    console.log("Error comparing password:", error.message);
+    console.error("Error comparing password:", error.message);
+    throw error;
   }
 };
-
 const User = mongoose.model("User", userSchema);
 
 export default User;

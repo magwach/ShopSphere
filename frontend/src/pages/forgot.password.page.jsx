@@ -207,9 +207,8 @@ export default function ForgotPasswordPage() {
   const handleBackToLogin = (complete) => {
     if (complete) {
       setTimeout(() => {
-        window.location.reload();
         navigate("/login");
-      }, 3000);
+      }, 5000);
     } else {
       navigate("/login");
     }

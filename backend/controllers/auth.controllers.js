@@ -61,7 +61,7 @@ export async function logout(req, res) {
     const refresh_token = req.cookies.refreshToken;
     if (!refresh_token) {
       return res
-        .status(400)
+        .status(200)
         .json({ success: false, message: "No refresh token found" });
     }
 
@@ -139,7 +139,7 @@ export async function refreshToken(req, res) {
     const refresh_token = req.cookies.refreshToken;
     if (!refresh_token) {
       return res
-        .status(400)
+        .status(200)
         .json({ success: false, message: "No refresh token found" });
     }
     const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
@@ -281,12 +281,23 @@ export async function resetPassword(req, res) {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    if (user.password === password) {
+
+    let isSamePassword;
+    try {
+      isSamePassword = await user.comparePassword(password);
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Error comparing password" });
+    }
+
+    if (isSamePassword) {
       return res.status(400).json({
         success: false,
         message: "Password cannot be same as old password",
       });
     }
+
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiresAt = undefined;

@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Mail, RotateCcw, Check, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { useNavigate } from "react-router-dom";
 
 import axios from "../lib/axios.js";
 import { toast } from "react-hot-toast";
@@ -24,7 +23,6 @@ export default function EmailVerificationPage() {
     useRef(null),
   ];
 
-  const navigate = useNavigate();
 
   const { user } = useUserStore();
 
