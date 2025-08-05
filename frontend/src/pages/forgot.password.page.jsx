@@ -24,6 +24,8 @@ export default function ForgotPasswordPage() {
   const [passwordError, setPasswordError] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  I;
   const [canResend, setCanResend] = useState(false);
   const [countdown, setCountdown] = useState(180);
 
@@ -108,7 +110,11 @@ export default function ForgotPasswordPage() {
 
   const handleEmailSubmit = async (resend) => {
     if (!email) return;
-    setIsLoading(true);
+    if (resend) {
+      setIsResending(true);
+    } else {
+      setIsLoading(true);
+    }
     try {
       await axios.post("/auth/send-password-reset-code", { email });
       toast.success("Reset code sent successfully");
@@ -119,7 +125,11 @@ export default function ForgotPasswordPage() {
       console.error("Error sending reset code:", error);
       toast.error(error.response.data?.message || "Failed to send reset code");
     } finally {
-      setIsLoading(false);
+      if (resend) {
+        setIsResending(false);
+      } else {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -397,7 +407,7 @@ export default function ForgotPasswordPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Verifying...
+                    {isResending ? "Resending..." : "Verifying..."}
                   </>
                 ) : (
                   <>
