@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
       enum: ["customer", "admin"],
       default: "customer",
     },
+    twoFactorAuth: {
+      type: Boolean,
+      default: true,
+    },
     lastLogin: {
       type: Date,
       default: Date.now,
@@ -43,6 +47,12 @@ const userSchema = new mongoose.Schema(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    OTP: {
+      type: String,
+    },
+    OTPTokenExpiresAt: {
+      type: Date,
     },
     resetPasswordToken: {
       type: String,

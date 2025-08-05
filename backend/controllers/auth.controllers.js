@@ -2,6 +2,7 @@ import redis from "../db/redis.js";
 import User from "../models/user.model.js";
 import createRandomCode from "../utils/create.random.code.js";
 import {
+  sendOTP,
   sendPasswordResetSuccessEmail,
   sendResetPasswordCode,
   sendVerificationEmail,
@@ -14,7 +15,7 @@ import {
 } from "../utils/token.handler.js";
 import jwt from "jsonwebtoken";
 
-export async function login(req, res) {
+export async function verifyPassword(req, res) {
   try {
     const { email, password } = req.body;
 
@@ -25,28 +26,65 @@ export async function login(req, res) {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-
     if (user && (await user.comparePassword(password))) {
-      const { accessToken, refreshToken } = generateToken(user._id);
-      await storeToken(user._id, refreshToken);
-      setCookies(res, accessToken, refreshToken);
-      user.lastLogin = Date.now();
+      const token = createRandomCode();
+      user.OTP = token;
+      user.OTPExpiresAt = Date.now() + 3 * 60 * 1000;
       await user.save();
-      user.password = undefined;
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpiresAt = undefined;
-      user.verificationToken = undefined;
-      user.verificationTokenExpiresAt = undefined;
-      return res.status(200).json({
-        success: true,
-        message: "Login successful",
-        data: user,
-      });
+      sendOTP(user.email, user.name, token);
+      return res
+        .status(200)
+        .json({ success: true, message: "Password verified" });
     } else {
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
+  } catch (error) {
+    console.error("Error in verifyPassword:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+
+export async function login(req, res) {
+  try {
+    const { token } = req.body;
+
+    const user = await User.findOne({ OTP: token });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid token" });
+    }
+
+    if (user.OTPExpiresAt < Date.now()) {
+      return res.status(400).json({ success: false, message: "Token expired" });
+    }
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const { accessToken, refreshToken } = generateToken(user._id);
+    await storeToken(user._id, refreshToken);
+    setCookies(res, accessToken, refreshToken);
+    user.lastLogin = Date.now();
+    await user.save();
+    user.password = undefined;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiresAt = undefined;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: user,
+    });
   } catch (error) {
     console.error("Error in login:", error);
     return res.status(500).json({
@@ -69,6 +107,8 @@ export async function logout(req, res) {
     const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
 
     const userId = decoded.id;
+    const user = await User.findById(userId);
+    await user.save();
     await redis.del(`refresh_token:${userId}`);
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");

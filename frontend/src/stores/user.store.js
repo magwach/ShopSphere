@@ -13,6 +13,14 @@ export const useUserStore = create((set, get) => ({
 
   setNumberOfCartItems: (count) => set({ numberOfCartItems: count }),
 
+  setLoading: (loading) => {
+    set({ loading });
+  },
+  setIsAuthenticated: (isAuthenticated) => {
+    set({ isAuthenticated });
+  },
+  setUser: (user) => set({ user }),
+
   signup: async ({ name, email, password, confirmPassword }, setFormData) => {
     set({ loading: true });
     if (password !== confirmPassword) {
@@ -51,34 +59,24 @@ export const useUserStore = create((set, get) => ({
       );
     }
   },
-  login: async (email, password, setEmail, setPassword) => {
-    set({ loading: true });
 
+  passwordVerification: async (email, password) => {
+    set({ authLoading: true });
     try {
-      const response = await axios.post("/auth/login", { email, password });
-      if (!response.data.success) {
-        throw new Error(response.data.message || "Login failed");
-      }
-      set({
-        user: response?.data?.data,
-        loading: false,
-        isAuthenticated: true,
+      const response = await axios.post("/auth/password-verification", {
+        email,
+        password,
       });
-      toast(
-        `${getTimeOfDayGreeting()} ${
-          response?.data?.data?.name?.split(" ")[1] ||
-          response?.data?.data?.name?.split(" ")[0]
-        }`,
-        { icon: "👏" }
-      );
-      setEmail("");
-      setPassword("");
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Verification failed");
+      }
+      set({ authLoading: false, isAuthenticated: true });
     } catch (error) {
-      set({ loading: false, isAuthenticated: false });
+      set({ authLoading: false, isAuthenticated: false });
       toast.error(
         error?.response?.data?.error?.[0] ||
           error?.response?.data?.message ||
-          "Login failed"
+          "Verification failed"
       );
     }
   },

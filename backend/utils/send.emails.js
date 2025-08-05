@@ -1,4 +1,5 @@
 import {
+  OTP_TEMPLATE,
   PASSWORD_RESET_REQUEST_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
@@ -69,6 +70,22 @@ export async function sendPasswordResetSuccessEmail(email, name) {
     sender: { name: "Shop Sphere", email: "shopsphereke@gmail.com" },
     subject: "Password Reset Success",
     htmlContent: PASSWORD_RESET_SUCCESS_TEMPLATE.replace("{name}", name),
+    category: "reset-password",
+  };
+
+  try {
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+  } catch (error) {
+    throw new Error("Failed to send email:", error);
+  }
+}
+
+export async function sendOTP(email, name, otp) {
+  const sendSmtpEmail = {
+    to: [{ email, name }],
+    sender: { name: "Shop Sphere", email: "shopsphereke@gmail.com" },
+    subject: "Your OTP",
+    htmlContent: OTP_TEMPLATE.replace("{otpCode}", otp).replace("{name}", name),
     category: "reset-password",
   };
 

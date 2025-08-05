@@ -10,12 +10,15 @@ import {
   resetPasswordCode,
   verifyResetPasswordCode,
   resetPassword,
+  verifyPassword,
 } from "../controllers/auth.controllers.js";
 import { protectedRoute } from "../middleware/auth.middleware.js";
 
 const authRouter = express.Router();
 
 authRouter.post("/signup", signup);
+
+authRouter.post("/password-verification", verifyPassword);
 
 authRouter.post("/login", login);
 
