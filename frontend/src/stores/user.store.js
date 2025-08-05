@@ -150,12 +150,7 @@ export const useUserStore = create((set, get) => ({
       });
     } catch (error) {
       set({ authLoading: false, isAuthenticated: false });
-      if (error?.response?.status === 401) {
-        toast.error("Session expired, please login", {
-          id: "session-expired",
-        });
-        return;
-      }
+      return;
     }
   },
   refreshToken: async () => {

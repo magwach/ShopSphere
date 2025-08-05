@@ -2,6 +2,7 @@ import redis from "../db/redis.js";
 import User from "../models/user.model.js";
 import createRandomCode from "../utils/create.random.code.js";
 import {
+  sendPasswordResetSuccessEmail,
   sendResetPasswordCode,
   sendVerificationEmail,
   sendWelcomeEmail,
@@ -282,19 +283,10 @@ export async function resetPassword(req, res) {
         .json({ success: false, message: "User not found" });
     }
 
-    let isSamePassword;
-    try {
-      isSamePassword = await user.comparePassword(password);
-    } catch (err) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Error comparing password" });
-    }
-
-    if (isSamePassword) {
+    if (await user.comparePassword(password)) {
       return res.status(400).json({
         success: false,
-        message: "Password cannot be same as old password",
+        message: "New password cannot be same as old password",
       });
     }
 
@@ -302,6 +294,7 @@ export async function resetPassword(req, res) {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpiresAt = undefined;
     await user.save();
+    await sendPasswordResetSuccessEmail(user.email, user.name);
     return res
       .status(200)
       .json({ success: true, message: "Password reset successfully" });

@@ -14,9 +14,10 @@ import toast from "react-hot-toast";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState(1); // 1: email, 2: code, 3: new password, 4: success
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [codeError, setCodeError] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +26,6 @@ export default function ForgotPasswordPage() {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  I;
   const [canResend, setCanResend] = useState(false);
   const [countdown, setCountdown] = useState(180);
 
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
     }
     try {
       await axios.post("/auth/send-password-reset-code", { email });
-      toast.success("Reset code sent successfully");
+      toast.success("Reset code sent");
       if (!resend) {
         setStep(2);
       }
@@ -134,6 +134,7 @@ export default function ForgotPasswordPage() {
   };
 
   const handleInputChange = (index, value) => {
+    setCodeError(false);
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
@@ -175,6 +176,7 @@ export default function ForgotPasswordPage() {
       });
       setStep(3);
     } catch (error) {
+      setCodeError(true);
       toast.error(error.response.data?.message || "Code verification failed");
     } finally {
       setIsLoading(false);
@@ -250,7 +252,6 @@ export default function ForgotPasswordPage() {
     checkPasswordStrength(newPassword);
   }, [newPassword]);
 
-  // Success screen
   if (step === 4) {
     return (
       <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.3)_0%,rgba(10,80,60,0.2)_45%,rgba(0,0,0,0.1)_100%)] flex items-center justify-center p-4">
@@ -286,7 +287,6 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.3)_0%,rgba(10,80,60,0.2)_45%,rgba(0,0,0,0.1)_100%)] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="bg-black/20 bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 border border-emerald-500 border-opacity-20 shadow-2xl">
-          {/* Step 1: Email Input */}
           {step === 1 && (
             <>
               <div className="text-center mb-8">
@@ -344,7 +344,7 @@ export default function ForgotPasswordPage() {
               <div className="mt-6 pt-6 border-t border-gray-700 text-center">
                 <button
                   onClick={() => handleBackToLogin(false)}
-                  className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors mx-auto"
+                  className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors mx-auto cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back to Sign In
@@ -353,7 +353,6 @@ export default function ForgotPasswordPage() {
             </>
           )}
 
-          {/* Step 2: Code Verification */}
           {step === 2 && (
             <>
               <div className="text-center mb-8">
@@ -392,7 +391,11 @@ export default function ForgotPasswordPage() {
                       value={digit}
                       onChange={(e) => handleInputChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
-                      className="w-12 h-12 text-center text-xl font-bold bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white transition-all duration-200"
+                      className={`w-12 h-12 text-center text-xl font-bold ${
+                        codeError
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-600 focus:ring-emerald-500 focus:border-emerald-500"
+                      } border  bg-gray-700 rounded-lg focus:outline-none focus:ring-2}  text-white transition-all duration-200`}
                       disabled={isLoading}
                     />
                   ))}
@@ -402,9 +405,9 @@ export default function ForgotPasswordPage() {
               <button
                 onClick={handleManualCodeSubmit}
                 disabled={isLoading || code.join("").length !== 6}
-                className="w-full flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] disabled:hover:scale-100 mb-6"
+                className="w-full flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] disabled:hover:scale-100 mb-6 cursor-pointer"
               >
-                {isLoading ? (
+                {isLoading || isResending ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     {isResending ? "Resending..." : "Verifying..."}
@@ -425,7 +428,7 @@ export default function ForgotPasswordPage() {
                 {canResend ? (
                   <button
                     onClick={handleResendCode}
-                    className="text-emerald-400 hover:text-emerald-300 transition-colors"
+                    className="text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
                   >
                     Resend Code
                   </button>
@@ -450,7 +453,6 @@ export default function ForgotPasswordPage() {
             </>
           )}
 
-          {/* Step 3: New Password */}
           {step === 3 && (
             <>
               <div className="text-center mb-8">

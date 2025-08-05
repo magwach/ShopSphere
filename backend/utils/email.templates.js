@@ -60,34 +60,39 @@ export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Password Reset Successful</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(to right, #4CAF50, #45a049); padding: 20px; text-align: center;">
-    <h1 style="color: white; margin: 0;">Password Reset Successful</h1>
+<body style="font-family: 'Segoe UI', sans-serif; background-color: #f0fdf4; color: #1a1a1a; margin: 0; padding: 0;">
+  <div style="background: linear-gradient(to right, #10b981, #059669); padding: 30px; text-align: center;">
+    <h1 style="color: #ffffff; font-size: 28px; margin: 0;">Password Reset Successful</h1>
   </div>
-  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <p>Hello,</p>
-    <p>We're writing to confirm that your password has been successfully reset.</p>
+
+  <div style="background-color: #ffffff; margin: 20px auto; padding: 30px; max-width: 600px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <p style="font-size: 16px;">Hello <strong>{name}</strong>,</p>
+    <p style="font-size: 16px;">We’re letting you know that your password has been successfully updated.</p>
+
     <div style="text-align: center; margin: 30px 0;">
-      <div style="background-color: #4CAF50; color: white; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; display: inline-block; font-size: 30px;">
+      <div style="background-color: #10b981; color: white; width: 60px; height: 60px; border-radius: 50%; line-height: 60px; font-size: 30px; display: inline-block;">
         ✓
       </div>
     </div>
-    <p>If you did not initiate this password reset, please contact our support team immediately.</p>
-    <p>For security reasons, we recommend that you:</p>
-    <ul>
-      <li>Use a strong, unique password</li>
-      <li>Enable two-factor authentication if available</li>
-      <li>Avoid using the same password across multiple sites</li>
+
+    <p style="font-size: 16px;">If you didn’t request this change, please contact our support team immediately.</p>
+
+    <p style="font-size: 16px;">To keep your account secure, we recommend that you:</p>
+    <ul style="font-size: 16px; padding-left: 20px;">
+      <li>Use a strong and unique password</li>
+      <li>Avoid reusing passwords across websites</li>
     </ul>
-    <p>Thank you for helping us keep your account secure.</p>
-    <p>Best regards,<br>Your App Team</p>
+
+    <p style="font-size: 16px;">Thank you for taking steps to protect your account.</p>
+    <p style="font-size: 16px;">Best regards,<br><strong>Your App Team</strong></p>
   </div>
-  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
-    <p>This is an automated message, please do not reply to this email.</p>
+
+  <div style="text-align: center; font-size: 12px; color: #888888; margin-top: 20px; padding: 10px;">
+    <p>This is an automated message. Please do not reply to this email.</p>
   </div>
 </body>
 </html>

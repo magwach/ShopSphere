@@ -2,13 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { Mail, RotateCcw, Check, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
-
 import axios from "../lib/axios.js";
 import { toast } from "react-hot-toast";
 import { useUserStore } from "../stores/user.store.js";
 
 export default function EmailVerificationPage() {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [codeError, setCodeError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [canResend, setCanResend] = useState(false);
@@ -23,12 +23,12 @@ export default function EmailVerificationPage() {
     useRef(null),
   ];
 
-
   const { user } = useUserStore();
 
   const userEmail = user?.email;
 
   const handleInputChange = (index, value) => {
+    setCodeError(false);
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
@@ -72,6 +72,7 @@ export default function EmailVerificationPage() {
       handleRedirect();
     } catch (error) {
       console.log(error);
+      setCodeError(true);
       toast.error(error.response.data?.message || "Verification failed");
     } finally {
       setIsLoading(false);
@@ -205,7 +206,11 @@ export default function EmailVerificationPage() {
                   value={digit}
                   onChange={(e) => handleInputChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-12 text-center text-xl font-bold bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white transition-all duration-200"
+                  className={`w-12 h-12 text-center text-xl font-bold bg-gray-700 border rounded-lg focus:outline-none focus:ring-2 ${
+                    codeError
+                      ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                      : "border-gray-600 focus:ring-emerald-500 focus:border-emerald-500"
+                  } text-white transition-all duration-200`}
                   disabled={isLoading}
                 />
               ))}
