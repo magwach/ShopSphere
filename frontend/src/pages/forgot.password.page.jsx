@@ -12,6 +12,7 @@ import {
 import axios from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { AnimatePresence, motion } from "framer-motion";
+import { useUserStore } from "../stores/user.store.js";
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState(1);
@@ -25,9 +26,10 @@ export default function ForgotPasswordPage() {
   const [passwordError, setPasswordError] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
   const [canResend, setCanResend] = useState(false);
   const [countdown, setCountdown] = useState(180);
+
+  const { checkAuthentication } = useUserStore();
 
   const passwordRef = useRef(null);
 
@@ -110,26 +112,23 @@ export default function ForgotPasswordPage() {
 
   const handleEmailSubmit = async (resend) => {
     if (!email) return;
-    if (resend) {
-      setIsResending(true);
-    } else {
-      setIsLoading(true);
-    }
+    !resend && setIsLoading(true);
+
     try {
       await axios.post("/auth/send-password-reset-code", { email });
-      toast.success("Reset code sent");
       if (!resend) {
         setStep(2);
+        toast.success("Reset code sent");
       }
     } catch (error) {
       console.error("Error sending reset code:", error);
-      toast.error(error.response.data?.message || "Failed to send reset code");
-    } finally {
-      if (resend) {
-        setIsResending(false);
-      } else {
-        setIsLoading(false);
+      if (!resend) {
+        toast.error(
+          error.response.data?.message || "Failed to send reset code"
+        );
       }
+    } finally {
+      !resend && setIsLoading(false);
     }
   };
 
@@ -213,14 +212,22 @@ export default function ForgotPasswordPage() {
   const handleResendCode = async () => {
     setCanResend(false);
     setCountdown(180);
-    handleEmailSubmit(true);
+    toast.promise(handleEmailSubmit(true), {
+      loading: "Sending code...",
+      success: "Code resent",
+      error: "Code resend failed",
+    });
   };
 
   const handleBackToLogin = (complete) => {
     if (complete) {
       setTimeout(() => {
-        navigate("/login");
-      }, 5000);
+        navigate("/");
+        checkAuthentication();
+      }, 6000);
+      setTimeout(() => {
+        toast.success("Password reset complete");
+      }, 4000);
     } else {
       navigate("/login");
     }
@@ -275,7 +282,7 @@ export default function ForgotPasswordPage() {
             </p>
 
             <p className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02]">
-              Redirecting to Login ....
+              Redirecting ....
             </p>
           </div>
         </div>
@@ -407,10 +414,10 @@ export default function ForgotPasswordPage() {
                 disabled={isLoading || code.join("").length !== 6}
                 className="w-full flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] disabled:hover:scale-100 mb-6 cursor-pointer"
               >
-                {isLoading || isResending ? (
+                {isLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    {isResending ? "Resending..." : "Verifying..."}
+                    Verifying...
                   </>
                 ) : (
                   <>

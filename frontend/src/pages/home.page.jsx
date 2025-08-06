@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import ProductSlider from "../components/product.slider.jsx";
 import { useUserStore } from "../stores/user.store.js";
 import EmailVerificationPage from "../components/verify.email.jsx";
-import TwoFactorAuthenticationPage from "../components/two.factor.auth.page.jsx";
 
 export default function HomePage() {
   const { fetchFeaturedProducts, products, fetchingProducts } =

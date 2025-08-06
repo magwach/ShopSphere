@@ -85,7 +85,12 @@ export default function App() {
               )
             }
           />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/forgot-password"
+            element={
+              isAuthenticated ? <Navigate to="/" /> : <ForgotPasswordPage />
+            }
+          />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/success" element={<PurchaseSuccessPage />} />
           <Route path="/purchase-cancelled" element={<PurchaseCancelPage />} />

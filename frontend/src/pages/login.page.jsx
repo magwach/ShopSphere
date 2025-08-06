@@ -24,6 +24,7 @@ export default function LoginPage() {
 
   const [step, setStep] = useState(1);
 
+
   const { isAuthenticated, authLoading, setIsAuthenticated } = useUserStore();
 
   const handleSubmit = async (eOrResend, maybeResend) => {

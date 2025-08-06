@@ -80,18 +80,24 @@ export default function EmailVerificationPage() {
   };
 
   const handleResendCode = async () => {
+    async function resendCode() {
+      try {
+        await axios.post("/auth/resend-verification-email", {
+          email: userEmail,
+        });
+        toast.success("Code Resent");
+      } catch (err) {
+        console.log(err);
+        toast.error(err.response.data?.message || "Code Resend Failed");
+      }
+    }
     setCanResend(false);
     setCountdown(180);
-
-    try {
-      await axios.post("/auth/resend-verification-email", {
-        email: userEmail,
-      });
-      toast.success("Code Resent");
-    } catch (err) {
-      console.log(err);
-      toast.error(err.response.data?.message || "Code Resend Failed");
-    }
+    toast.promise(resendCode(), {
+      loading: "Sending code...",
+      success: "Code resent",
+      error: "Code resend failed",
+    });
   };
 
   const handleManualSubmit = () => {

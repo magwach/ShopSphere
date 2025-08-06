@@ -88,7 +88,7 @@ export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
     </ul>
 
     <p style="font-size: 16px;">Thank you for taking steps to protect your account.</p>
-    <p style="font-size: 16px;">Best regards,<br><strong>Your App Team</strong></p>
+    <p style="font-size: 16px;">Best regards,<br><strong>Shop Sphere</strong></p>
   </div>
 
   <div style="text-align: center; font-size: 12px; color: #888888; margin-top: 20px; padding: 10px;">

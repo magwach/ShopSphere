@@ -11,10 +11,12 @@ export default function ProductCard({ product }) {
 
   const navigate = useNavigate();
 
+  const pathname = window.location.pathname;
+
   const handleAddToCart = () => {
     if (!user) {
       toast.error("Please login to add products to cart", { id: "login" });
-      navigate("/login");
+      navigate(`/login?next=${pathname}`);
       return;
     } else {
       !loading && addToCart(product);

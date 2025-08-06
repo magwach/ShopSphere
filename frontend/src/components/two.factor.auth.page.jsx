@@ -1,5 +1,6 @@
 import { Check, Loader2, Mail } from "lucide-react";
 import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getTimeOfDayGreeting } from "../utils/greeting.js";
 import { useState } from "react";
@@ -20,6 +21,11 @@ export default function TwoFactorAuthenticationPage({
   const [isLoading, setIsLoading] = useState(false);
 
   const { setUser, setIsAuthenticated } = useUserStore();
+
+  const next = new URLSearchParams(useLocation().search).get("next");
+
+  const navigate = useNavigate();
+  console.log(next);
 
   const inputRefs = [
     useRef(null),
@@ -89,11 +95,14 @@ export default function TwoFactorAuthenticationPage({
       const response = await axios.post("/auth/login", {
         token: token.toUpperCase(),
       });
-      setUser(response?.data?.data);
-      setIsAuthenticated(true);
-      setIsLoading(false);
-      setEmail("");
-      setPassword("");
+      navigate(next ? `${next}` : "/");
+      setTimeout(() => {
+        setUser(response?.data?.data);
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        setEmail("");
+        setPassword("");
+      }, 1000);
       toast(
         <span>
           {getTimeOfDayGreeting()}{" "}
